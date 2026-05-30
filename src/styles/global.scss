@@ -1,0 +1,140 @@
+@use './variables.scss' as *;
+@use './mixins.scss' as *;
+
+// CSS 变量（供运行时与 JS 读取）
+:root {
+  --color-bg-primary: #{$color-bg-primary};
+  --color-bg-secondary: #{$color-bg-secondary};
+  --color-bg-card: #{$color-bg-card};
+  --color-accent: #{$color-accent};
+  --color-accent-secondary: #{$color-accent-secondary};
+  --color-accent-gradient: #{$color-accent-gradient};
+  --color-text-primary: #{$color-text-primary};
+  --color-text-secondary: #{$color-text-secondary};
+  --color-border: #{$color-border};
+  --sidebar-width: #{$sidebar-width};
+  --sidebar-collapsed-width: #{$sidebar-collapsed-width};
+  --header-height: #{$header-height};
+  --glass-blur: #{$glass-blur};
+  --shadow-card: #{$shadow-card};
+  --shadow-glow: #{$shadow-glow};
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#app {
+  width: 100%;
+  min-height: 100vh;
+}
+
+body {
+  font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+// 科技风玻璃卡片
+.glass-card {
+  @include glass-card;
+  transition: border-color $transition-fast, box-shadow $transition-fast;
+
+  &:hover {
+    border-color: $color-border-active;
+  }
+}
+
+.glass-card--glow:hover {
+  box-shadow: $shadow-card, $shadow-glow;
+}
+
+// 渐变文字
+.gradient-text {
+  @include text-gradient;
+}
+
+// 渐变边框高亮卡片
+.gradient-border-card {
+  @include gradient-border($radius-lg);
+  @include glass-card;
+}
+
+// 页面容器
+.page-container {
+  padding: 24px;
+  min-height: calc(100vh - var(--header-height) - 48px);
+  @include scrollbar-dark;
+}
+
+// 科技网格背景（布局底层）
+.tech-grid-bg {
+  background-color: var(--color-bg-primary);
+  background-image:
+    linear-gradient(rgba(59, 130, 246, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59, 130, 246, 0.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+// 卡片悬停抬升（考核点：动效）
+.hover-lift {
+  transition:
+    transform $transition-normal,
+    box-shadow $transition-normal,
+    border-color $transition-fast;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: $shadow-card, $shadow-glow;
+    border-color: $color-border-active;
+  }
+}
+
+// 路由过渡（顶层：登录 ↔ 系统布局）
+.page-fade-enter-active,
+.page-fade-leave-active {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.page-fade-enter-from {
+  opacity: 0;
+  transform: scale(0.98) translateY(8px);
+}
+
+.page-fade-leave-to {
+  opacity: 0;
+  transform: scale(0.98) translateY(-8px);
+}
+
+// 路由过渡（布局内子页面）
+.fade-slide-enter-active,
+.fade-slide-leave-active {
+  transition: opacity 0.28s ease, transform 0.28s ease;
+}
+
+.fade-slide-enter-from {
+  opacity: 0;
+  transform: translateY(16px);
+}
+
+.fade-slide-leave-to {
+  opacity: 0;
+  transform: translateY(-12px);
+}
+
+// Element Plus Loading 深色适配
+.el-loading-mask {
+  background-color: rgba(10, 14, 26, 0.72) !important;
+}

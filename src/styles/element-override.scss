@@ -1,0 +1,33 @@
+// Element Plus 深色主题覆盖（配合 dark css-vars）
+:root {
+  --el-color-primary: #3b82f6;
+  --el-color-primary-light-3: #60a5fa;
+  --el-color-primary-light-5: #93c5fd;
+  --el-color-primary-light-7: #bfdbfe;
+  --el-color-primary-light-9: #1e3a5f;
+  --el-color-primary-dark-2: #2563eb;
+  --el-bg-color: #111827;
+  --el-bg-color-page: #0a0e1a;
+  --el-bg-color-overlay: rgba(17, 24, 39, 0.95);
+  --el-text-color-primary: #f1f5f9;
+  --el-text-color-regular: #cbd5e1;
+  --el-text-color-secondary: #94a3b8;
+  --el-border-color: rgba(148, 163, 184, 0.2);
+  --el-border-color-light: rgba(148, 163, 184, 0.12);
+  --el-fill-color-blank: rgba(17, 24, 39, 0.6);
+}
+
+.el-card {
+  --el-card-bg-color: rgba(17, 24, 39, 0.72);
+  --el-card-border-color: rgba(148, 163, 184, 0.15);
+  backdrop-filter: blur(12px);
+}
+
+.el-button--primary {
+  background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+  border: none;
+
+  &:hover {
+    background: linear-gradient(135deg, #60a5fa 0%, #818cf8 100%);
+  }
+}
