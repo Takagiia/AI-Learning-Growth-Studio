@@ -70,7 +70,7 @@ function handleLogout() {
     <el-card class="glass-card profile__card" shadow="never">
       <template #header>个人资料</template>
       <div class="profile__main">
-        <el-avatar :size="96" :src="form.avatar || userStore.userInfo.avatar">
+        <el-avatar :size="96" :src="form.avatar || userStore.userInfo.avatar" :alt="(form.nickname || userStore.userInfo.nickname) + '的头像'">
           {{ form.nickname?.[0] || '学' }}
         </el-avatar>
         <el-form ref="formRef" :model="form" :rules="rules" label-width="80px" class="profile__form">

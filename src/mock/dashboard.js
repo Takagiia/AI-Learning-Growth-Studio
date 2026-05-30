@@ -13,8 +13,8 @@ export default [
         taskCount: '@integer(3, 15)',
         completedRate: '@integer(40, 95)',
         weekTrend: {
-          'labels|7': ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
-          'values|7': ['@integer(30, 180)'],
+          labels: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+          values: [45, 80, 120, 155, 130, 95, 50],
         },
       }),
     }),

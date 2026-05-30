@@ -23,7 +23,7 @@ function goProfile() {
 <template>
   <header class="app-header glass-card glass-card--glow">
     <div class="app-header__left">
-      <el-button :icon="collapseIcon" circle text @click="themeStore.toggleSidebar" />
+      <el-button :icon="collapseIcon" circle text :aria-label="themeStore.sidebarCollapsed ? '展开侧栏' : '折叠侧栏'" @click="themeStore.toggleSidebar" />
       <div>
         <h1 class="app-header__title gradient-text">{{ pageTitle }}</h1>
         <p class="app-header__breadcrumb">AI Learning Assistant / {{ pageTitle }}</p>
@@ -33,9 +33,9 @@ function goProfile() {
       <el-tooltip :content="themeStore.showParticles ? '关闭粒子' : '开启粒子'" placement="bottom">
         <el-switch v-model="themeStore.showParticles" inline-prompt active-text="粒子" inactive-text="粒子" />
       </el-tooltip>
-      <el-button :icon="themeIcon" circle text @click="themeStore.toggleTheme" />
+      <el-button :icon="themeIcon" circle text :aria-label="themeStore.isDark ? '切换亮色模式' : '切换深色模式'" @click="themeStore.toggleTheme" />
       <div class="app-header__user" @click="goProfile">
-        <el-avatar :size="36" :src="userStore.userInfo.avatar">
+        <el-avatar :size="36" :src="userStore.userInfo.avatar" :alt="userStore.userInfo.nickname + '的头像'">
           {{ userStore.userInfo.nickname?.[0] || '学' }}
         </el-avatar>
         <span class="app-header__name">{{ userStore.userInfo.nickname }}</span>

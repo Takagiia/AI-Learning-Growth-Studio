@@ -11,8 +11,9 @@ import { ref } from 'vue'
 
 defineProps({
   src: { type: String, required: true },
-  alt: { type: String, default: '' },
+  alt: { type: String, default: '课程封面' },
   fit: { type: String, default: 'cover' },
+  fetchpriority: { type: String, default: 'auto' },
 })
 
 const emit = defineEmits(['load', 'error'])
@@ -36,6 +37,7 @@ function onError() {
     <img
       :src="src"
       :alt="alt"
+      :fetchpriority="fetchpriority"
       loading="lazy"
       decoding="async"
       :style="{ objectFit: fit }"

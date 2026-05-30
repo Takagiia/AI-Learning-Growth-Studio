@@ -6,6 +6,7 @@ import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import { viteMockServe } from 'vite-plugin-mock'
+import viteCompression from 'vite-plugin-compression'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -28,6 +29,9 @@ export default defineConfig(({ command }) => ({
       watchFiles: true,
       logger: true,
     }),
+    // 构建时生成 .gz / .br 压缩文件，配合部署服务器直接返回预压缩资源
+    viteCompression({ algorithm: 'gzip', ext: '.gz', threshold: 1024, deleteOriginFile: false }),
+    viteCompression({ algorithm: 'brotliCompress', ext: '.br', threshold: 1024, deleteOriginFile: false }),
   ],
   resolve: {
     alias: {

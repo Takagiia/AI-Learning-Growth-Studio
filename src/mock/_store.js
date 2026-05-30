@@ -6,6 +6,14 @@
 let planIdSeed = 100
 let courseIdSeed = 200
 
+/** 当前登录用户的内存快照，用于保证 profile 与 login 返回一致 */
+export let currentUserProfile = null
+
+/** 设置当前用户资料（解决 ES module import 不可变问题） */
+export function setCurrentUserProfile(profile) {
+  currentUserProfile = profile
+}
+
 export const studyPlans = [
   {
     id: '1',

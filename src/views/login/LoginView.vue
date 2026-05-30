@@ -55,7 +55,7 @@ async function handleLogin() {
   <div class="login-page tech-grid-bg">
     <ParticleBackground v-if="themeStore.showParticles" color="59, 130, 246" :count="80" />
     <div class="login-page__glow" />
-    <el-card class="login-card gradient-border-card" shadow="never">
+    <el-card class="login-card gradient-border-card" shadow="never" role="main">
       <h2 class="gradient-text login-card__title">AI 学习成长助手</h2>
       <p class="login-card__subtitle">科技风学习平台 · 课程演示项目</p>
       <el-form ref="formRef" :model="form" :rules="rules" label-position="top" @submit.prevent="handleLogin">

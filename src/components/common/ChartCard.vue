@@ -26,7 +26,8 @@ let resizeObserver = null
 
 async function getEcharts() {
   if (!echartsLib) {
-    const mod = await import('echarts')
+    // 按需引入，仅加载 line/bar/pie + 必要组件，体积减少约 65%
+    const mod = await import('@/utils/echarts-init')
     echartsLib = mod.default || mod
   }
   return echartsLib

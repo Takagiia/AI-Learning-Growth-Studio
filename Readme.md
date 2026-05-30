@@ -62,6 +62,7 @@ npm run preview
 | **阶段二** | 基础设施：主题/布局/粒子、Pinia、Axios、Mock、AppLayout | ✅ 已完成 |
 | **阶段三** | 认证与业务页面：Dashboard、计划、课程、AI、分析、个人中心 | ✅ 已完成 |
 | **阶段五** | 打磨与考核：组件化复查、性能、动效、联调、文档 | ✅ 已完成 |
+| **阶段六** | Lighthouse 优化：ECharts 按需引入、无障碍、SEO、gzip 压缩 | ✅ 已完成 |
 
 ---
 
@@ -86,6 +87,7 @@ npm run preview
 
 - **unplugin-auto-import**：自动导入 Vue / Router / Pinia API
 - **unplugin-vue-components** + **ElementPlusResolver**：Element Plus **按需引入**组件
+- **vite-plugin-compression**：构建时生成 `.gz` / `.br` 预压缩文件，配合 Nginx 静态压缩
 - **路径别名**：`@` → `src/`
 
 ### 可选（后续按需）
@@ -280,6 +282,49 @@ project_code/
 | ECharts | Dashboard、数据分析页 |
 | 组件化 props/emit/slot | 见 `docs/COMPONENTS.md` |
 | MockJS | `src/mock` + vite-plugin-mock |
+
+---
+
+## Lighthouse 性能优化记录
+
+基于 Chrome Lighthouse v13 审计并优化，报告存档于 [`reports/lighthouse/`](reports/lighthouse/)。
+
+### 优化成果
+
+| 维度 | 优化前 | 优化后（预期） | 关键措施 |
+|------|:------:|:------:|------|
+| Performance | 57-67 | **68-78** | ECharts tree-shaking（1MB→569KB）、gzip 压缩 |
+| Accessibility | 74-81 | **88-95** | aria-label、alt、main 地标 |
+| SEO | 75 | **90+** | meta description |
+| Best Practices | 77 | **85+** | 外部域名 preconnect |
+| 总包体积 | 6,767 KiB | **~2,500 KiB**（gzip） | ECharts 按需引入 + gzip 压缩 |
+
+### 已完成的优化项
+
+#### 性能
+- **ECharts 按需引入**：创建 `src/utils/echarts-init.js`，仅注册 line/bar/pie + grid/tooltip/legend/title，体积减少约 43%
+- **构建 gzip/brotli 压缩**：`vite-plugin-compression` 同步生成 `.gz` / `.br` 文件，JS 压缩率约 67%
+- **外部域名 preconnect**：对 picsum.photos、api.dicebear.com、clarity.ms 预连接，加速图片与资源加载
+- **图片 fetchpriority**：CourseCard 封面图设为 `low` 优先级，避免与首屏关键资源争抢带宽
+- **路由懒加载**：全部页面 `() => import(...)` + chunk 命名
+- **ECharts 异步加载**：ChartCard 动态 `import()`，非图表页零开销
+- **搜索防抖**：课程/计划搜索 400ms debounce
+
+#### 无障碍（Accessibility）
+- **图标按钮 aria-label**：AppHeader 的折叠/主题切换按钮添加动态 aria-label
+- **图片 alt 属性**：LazyImage 默认 alt、el-avatar 全部添加 alt
+- **登录页 main 地标**：添加 `role="main"` 语义标记
+- **颜色对比度提升**：文字色 `#94a3b8`→`#cbd5e1`、`#64748b`→`#94a3b8`，满足 WCAG AA 标准
+
+#### SEO
+- **meta description**：`index.html` 添加页面描述元标签
+
+#### Mock 数据质量
+- 用户信息固定化（profile 与 login 返回一致）
+- totalHours 跨接口统一（dashboard/analytics 共享同一数据源）
+- 章节标题有意义的课程专属内容
+- 图表 X 轴标签顺序固定
+- AI 助手最小 300ms loading 反馈
 
 ---
 

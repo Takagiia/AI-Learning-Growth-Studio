@@ -22,7 +22,7 @@ const categoryLabels = {
 <template>
   <el-card class="course-card glass-card glass-card--glow hover-lift" shadow="never" @click="emit('click', course)">
     <div class="course-card__cover">
-      <LazyImage :src="course.cover" :alt="course.title" />
+      <LazyImage :src="course.cover" :alt="course.title" fetchpriority="low" />
       <el-tag size="small" class="course-card__tag">{{ categoryLabels[course.category] || course.category }}</el-tag>
     </div>
     <div class="course-card__body">

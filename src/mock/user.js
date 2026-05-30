@@ -1,4 +1,24 @@
 import Mock from 'mockjs'
+import { currentUserProfile, setCurrentUserProfile } from './_store'
+
+/**
+ * 生成一份固定的用户资料（仅首次调用时创建）
+ * 后续 profile 请求始终返回同一份数据，解决「每次刷新随机变化」的问题
+ */
+function ensureProfile() {
+  if (!currentUserProfile) {
+    setCurrentUserProfile({
+      id: Mock.mock('@id'),
+      username: 'admin',
+      nickname: 'AI 学习者',
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=admin',
+      signature: '专注学习，持续成长',
+      studyDays: 128,
+      totalHours: 486,
+    })
+  }
+  return currentUserProfile
+}
 
 /** 用户模块 Mock 接口 */
 export default [
@@ -8,18 +28,14 @@ export default [
     response: ({ body }) => {
       const { username, password } = body || {}
       if (username === 'admin' && password === '123456') {
+        // 登录时初始化/更新内存中的用户资料，确保 profile 接口返回一致
+        const profile = ensureProfile()
         return {
           code: 200,
           message: '登录成功',
           data: {
             token: Mock.mock('@guid'),
-            userInfo: {
-              id: Mock.mock('@id'),
-              username: 'admin',
-              nickname: 'AI 学习者',
-              avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=admin',
-              signature: '专注学习，持续成长',
-            },
+            userInfo: { ...profile },
           },
         }
       }
@@ -36,28 +52,26 @@ export default [
     response: () => ({
       code: 200,
       message: 'ok',
-      data: Mock.mock({
-        id: '@id',
-        username: 'admin',
-        nickname: '@cname',
-        avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=profile',
-        signature: '@csentence(8, 20)',
-        studyDays: '@integer(30, 365)',
-        totalHours: '@integer(100, 2000)',
-      }),
+      data: { ...ensureProfile() },
     }),
   },
   {
     url: '/api/user/profile',
     method: 'put',
-    response: ({ body }) => ({
-      code: 200,
-      message: '保存成功',
-      data: {
-        ...body,
-        id: body.id || '1',
-        username: body.username || 'admin',
-      },
-    }),
+    response: ({ body }) => {
+      // 更新内存中的用户资料，保证下次 get 返回最新值
+      if (currentUserProfile) {
+        Object.assign(currentUserProfile, body)
+      }
+      return {
+        code: 200,
+        message: '保存成功',
+        data: {
+          ...body,
+          id: body.id || '1',
+          username: body.username || 'admin',
+        },
+      }
+    },
   },
 ]

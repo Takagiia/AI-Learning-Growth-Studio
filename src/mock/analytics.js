@@ -1,4 +1,5 @@
 import Mock from 'mockjs'
+import { currentUserProfile, courses } from './_store'
 
 /** 数据分析 Mock */
 export default [
@@ -9,12 +10,12 @@ export default [
       code: 200,
       message: 'ok',
       data: Mock.mock({
-        totalHours: '@integer(200, 2000)',
+        totalHours: currentUserProfile?.totalHours ?? 486,
         completedTasks: '@integer(20, 200)',
         courseCompletion: '@integer(40, 95)',
         weeklyHours: {
-          'labels|7': ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
-          'values|7': ['@integer(1, 8)'],
+          labels: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+          values: [2, 4, 6, 7, 5, 3, 1],
         },
         taskRate: {
           done: '@integer(30, 80)',
@@ -22,11 +23,11 @@ export default [
           pending: '@integer(5, 30)',
         },
         courseProgress: {
-          'list|4': [{ name: '@ctitle(4,8)', value: '@integer(20, 100)' }],
+          list: courses.map((c) => ({ name: c.title, value: c.progress })),
         },
         monthTrend: {
-          'labels|6': ['1月', '2月', '3月', '4月', '5月', '6月'],
-          'values|6': ['@integer(50, 300)'],
+          labels: ['1月', '2月', '3月', '4月', '5月', '6月'],
+          values: [120, 180, 220, 260, 310, 340],
         },
       }),
     }),

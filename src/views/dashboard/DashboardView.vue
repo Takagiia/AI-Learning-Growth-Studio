@@ -54,7 +54,7 @@ onMounted(async () => {
             <el-tag effect="plain" type="success">累计 {{ userStore.userInfo.totalHours || 0 }} 小时</el-tag>
           </div>
         </div>
-        <el-avatar :size="72" :src="userStore.userInfo.avatar">
+        <el-avatar :size="72" :src="userStore.userInfo.avatar" :alt="userStore.userInfo.nickname + '的头像'">
           {{ userStore.userInfo.nickname?.[0] }}
         </el-avatar>
       </div>

@@ -28,12 +28,19 @@ function pushMessage(role, content) {
 }
 
 async function handleSend(text) {
+  if (loading.value) return
   pushMessage('user', text)
   loading.value = true
+
+  // 保证 loading 动画至少展示 300ms，避免一闪而过
+  const minDelay = new Promise((resolve) => setTimeout(resolve, 300))
+
   try {
     const res = await sendAiChatApi({ question: text })
+    await minDelay
     pushMessage('assistant', res.data.content)
   } catch {
+    await minDelay
     pushMessage('assistant', '请求失败，请稍后重试。')
   } finally {
     loading.value = false

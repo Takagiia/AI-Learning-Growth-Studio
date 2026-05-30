@@ -33,6 +33,7 @@ function handleSend() {
 }
 
 function handleQuick(q) {
+  if (props.loading) return
   emit('quick', q)
 }
 
@@ -69,6 +70,7 @@ function onKeydown(e) {
         v-for="q in quickQuestions"
         :key="q"
         class="ai-chat__quick-tag"
+        :class="{ 'ai-chat__quick-tag--disabled': loading }"
         effect="plain"
         round
         @click="handleQuick(q)"
@@ -83,10 +85,11 @@ function onKeydown(e) {
         type="textarea"
         :rows="2"
         placeholder="输入学习问题，Enter 发送..."
+        :disabled="loading"
         resize="none"
         @keydown="onKeydown"
       />
-      <el-button type="primary" :icon="Promotion" :loading="loading" @click="handleSend">发送</el-button>
+      <el-button type="primary" :icon="Promotion" :loading="loading" :disabled="loading" @click="handleSend">发送</el-button>
     </div>
   </div>
 </template>
@@ -204,6 +207,12 @@ function onKeydown(e) {
 
 .ai-chat__quick-tag {
   cursor: pointer;
+
+  &--disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+    pointer-events: none;
+  }
 }
 
 .ai-chat__input {
