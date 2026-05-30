@@ -63,6 +63,7 @@ npm run preview
 | **阶段三** | 认证与业务页面：Dashboard、计划、课程、AI、分析、个人中心 | ✅ 已完成 |
 | **阶段五** | 打磨与考核：组件化复查、性能、动效、联调、文档 | ✅ 已完成 |
 | **阶段六** | Lighthouse 优化：ECharts 按需引入、无障碍、SEO、gzip 压缩 | ✅ 已完成 |
+| **阶段七** | UI/UX 重构：浅色模式、靛蓝色彩体系、热力图、看板视图、知识点 | ✅ 已完成 |
 
 ---
 
@@ -269,6 +270,12 @@ project_code/
 | 个人中心 | 修改昵称保存 | localStorage 与页面同步更新 |
 | 退出 | 点击退出登录 | 清空状态，跳转登录页 |
 | 构建 | `npm run build` | 无报错，dist 可 `npm run preview` 预览 |
+| 浅色模式 | 点击右上角月亮图标 | 全局切换浅色，文字卡片对比度正常 |
+| 看板视图 | 学习计划页点击网格式按钮 | 卡片网格展示计划 |
+| 热力图 | 数据分析页底部 | 日历热力图显示学习分布 |
+| 知识点 | 课程管理 → 点击课程 | 抽屉中显示知识点标签 |
+| 章节图例 | 课程详情抽屉 | 绿点=已完成、蓝点=待学习 |
+| 学习记录 | 首页底部 | Timeline 展示最近学习活动 |
 
 ### 技术考核覆盖自查
 
@@ -279,9 +286,18 @@ project_code/
 | Pinia | user / studyPlan / theme + localStorage |
 | Axios | 统一封装、拦截器、Mock |
 | Element Plus | 按需引入 + 深色主题 |
-| ECharts | Dashboard、数据分析页 |
+| ECharts | Dashboard、数据分析页（含热力图） |
 | 组件化 props/emit/slot | 见 `docs/COMPONENTS.md` |
 | MockJS | `src/mock` + vite-plugin-mock |
+| 自定义指令 v-lazy | `src/directives/lazy.js` IntersectionObserver |
+| KeepAlive | AppLayout `<keep-alive>` 缓存页面 |
+| provide/inject | AppLayout → ChartCard 主题跨级通信 |
+| 动态组件 | QuickEntry / AppSidebar `<component :is>` 图标 |
+| 深色/浅色双主题 | CSS 变量 + `data-theme` + ECharts 联动 |
+| Lodash | `lodash-es` debounce |
+| ESLint | `eslint.config.js` + `npm run lint` |
+| Lighthouse 优化 | ECharts tree-shaking、gzip、无障碍、SEO |
+| Clarity 分析 | 生产环境条件加载 |
 
 ---
 
@@ -318,6 +334,21 @@ project_code/
 
 #### SEO
 - **meta description**：`index.html` 添加页面描述元标签
+
+#### UI/UX 升级（ChatGPT + Gemini 建议整合）
+- **色彩系统**：主色蓝色 `#3b82f6` → 靛蓝 `#6366f1`，降低荧光感
+- **浅色模式**：完整的双主题系统（`data-theme` + CSS 变量联动），侧栏/顶栏/卡片/表格/标签/ECharts 全链路适配
+- **对比度**：17 处 SCSS 变量 → CSS 自定义属性，浅色模式下文字清晰可读
+- **阴影体系**：卡片用 `box-shadow` 替代强边框，建立三级视觉层级
+- **降噪**：粒子透明度 -70%、网格 -50%、发光 -60%
+- **微交互**：body 过渡 0.3s、卡片 hover lift、输入框 Focus 光环、表格 hover 淡蓝
+- **课程卡片**：封面渐变蒙层 + hover 缩放动效
+- **AI 聊天气泡**：圆角阴影 + 浅色适配 + 跳动输入动画
+- **章节时间轴**：颜色图例（绿=已完成、蓝=待学习）
+- **仪表盘**：学习记录 Timeline 替代原文字建议
+- **学习计划**：列表/卡片双视图切换
+- **数据分析**：新增学习热力图（日历形式）
+- **课程详情**：新增知识点标签字段
 
 #### Mock 数据质量
 - 用户信息固定化（profile 与 login 返回一致）

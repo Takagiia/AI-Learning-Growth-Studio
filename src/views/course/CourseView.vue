@@ -94,12 +94,21 @@ async function openDetail(course) {
           <p class="course-detail__meta">
             讲师：{{ courseDetail.teacher }} · {{ courseDetail.lessons }} 课时
           </p>
+          <div v-if="courseDetail.knowledgePoints?.length" class="course-detail__tags">
+            <el-tag v-for="kp in courseDetail.knowledgePoints" :key="kp" size="small" effect="plain" type="info">
+              {{ kp }}
+            </el-tag>
+          </div>
           <div class="course-detail__progress">
             <span>学习进度</span>
             <span>{{ courseDetail.progress }}%</span>
           </div>
           <el-progress :percentage="courseDetail.progress" :stroke-width="10" />
           <el-divider>章节列表</el-divider>
+          <div class="course-detail__legend">
+            <span><span class="course-detail__dot course-detail__dot--done"></span> 已完成</span>
+            <span><span class="course-detail__dot course-detail__dot--todo"></span> 待学习</span>
+          </div>
           <el-timeline>
             <el-timeline-item
               v-for="ch in courseDetail.chapters"
@@ -149,15 +158,50 @@ async function openDetail(course) {
 }
 
 .course-detail__desc {
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
   margin: 12px 0;
   line-height: 1.6;
 }
 
 .course-detail__meta {
   font-size: 13px;
-  color: $color-text-muted;
+  color: var(--color-text-muted);
+  margin-bottom: 12px;
+}
+
+.course-detail__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
   margin-bottom: 16px;
+}
+
+.course-detail__legend {
+  display: flex;
+  gap: 20px;
+  font-size: 12px;
+  color: var(--color-text-muted);
+  margin-bottom: 12px;
+
+  span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+}
+
+.course-detail__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+
+  &--done {
+    background: #22c55e;
+  }
+  &--todo {
+    background: #6366f1;
+  }
 }
 
 .course-detail__progress {

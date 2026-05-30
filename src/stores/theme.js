@@ -42,17 +42,15 @@ export const useThemeStore = defineStore('theme', () => {
   function toggleTheme() {
     isDark.value = !isDark.value
     applyTheme()
-    persist()
+    // persist 由 watch 统一触发，避免重复写入
   }
 
   function toggleParticles() {
     showParticles.value = !showParticles.value
-    persist()
   }
 
   function toggleSidebar() {
     sidebarCollapsed.value = !sidebarCollapsed.value
-    persist()
   }
 
   watch([isDark, showParticles, sidebarCollapsed], persist)

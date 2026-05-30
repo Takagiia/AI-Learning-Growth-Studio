@@ -47,7 +47,7 @@ function onKeydown(e) {
 
 <template>
   <div class="ai-chat glass-card">
-    <div ref="listRef" class="ai-chat__messages">
+    <div ref="listRef" class="ai-chat__messages" role="log" aria-live="polite" aria-label="聊天消息列表">
       <div
         v-for="msg in messages"
         :key="msg.id"
@@ -60,7 +60,7 @@ function onKeydown(e) {
           <span class="ai-chat__time">{{ msg.time }}</span>
         </div>
       </div>
-      <div v-if="loading" class="ai-chat__typing">
+      <div v-if="loading" class="ai-chat__typing" role="status" aria-label="AI 正在输入...">
         <span /><span /><span />
       </div>
     </div>
@@ -119,8 +119,9 @@ function onKeydown(e) {
     flex-direction: row-reverse;
 
     .ai-chat__content {
-      background: rgba(59, 130, 246, 0.25);
-      border-color: rgba(59, 130, 246, 0.4);
+      background: rgba(99, 102, 241, 0.2);
+      border-color: rgba(99, 102, 241, 0.3);
+      border-radius: 16px 4px 16px 16px;
     }
 
     .ai-chat__time {
@@ -129,8 +130,23 @@ function onKeydown(e) {
   }
 
   &--assistant .ai-chat__content {
-    background: rgba(139, 92, 246, 0.15);
-    border-color: rgba(139, 92, 246, 0.3);
+    background: rgba(139, 92, 246, 0.12);
+    border-color: rgba(139, 92, 246, 0.2);
+    border-radius: 4px 16px 16px 16px;
+  }
+
+  // 浅色模式气泡适配
+  :root[data-theme='light'] &--user .ai-chat__content,
+  :root:not(.dark) &--user .ai-chat__content {
+    background: #eef2ff;
+    border-color: #c7d2fe;
+    color: #2d3748;
+  }
+  :root[data-theme='light'] &--assistant .ai-chat__content,
+  :root:not(.dark) &--assistant .ai-chat__content {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+    color: #2d3748;
   }
 }
 
@@ -150,8 +166,9 @@ function onKeydown(e) {
 .ai-chat__content {
   max-width: 75%;
   padding: 12px 16px;
-  border-radius: $radius-md;
   border: 1px solid $color-border;
+  border-radius: $radius-md;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   line-height: 1.6;
   font-size: 14px;
 }
@@ -159,7 +176,7 @@ function onKeydown(e) {
 .ai-chat__time {
   display: block;
   font-size: 11px;
-  color: $color-text-muted;
+  color: var(--color-text-muted);
   margin-top: 6px;
 }
 

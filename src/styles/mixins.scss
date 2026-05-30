@@ -41,6 +41,13 @@
   -webkit-text-fill-color: transparent;
 }
 
+// 浅色模式卡片阴影（替代边框）
+@mixin card-light {
+  background: $light-bg-card;
+  border: 1px solid $light-border;
+  box-shadow: $light-shadow;
+}
+
 @mixin scrollbar-dark {
   &::-webkit-scrollbar {
     width: 6px;

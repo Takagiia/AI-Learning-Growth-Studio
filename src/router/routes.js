@@ -54,5 +54,5 @@ export function getMenuItems() {
   }))
 }
 
-/** 动态路由扩展预留 */
+/** 动态路由扩展预留（如后续需按角色/权限动态注入路由，通过 router.addRoute 添加此数组中的路由配置） */
 export const asyncRoutes = []

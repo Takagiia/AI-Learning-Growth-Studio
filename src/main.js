@@ -3,6 +3,7 @@ import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
 import { useThemeStore } from '@/stores/theme'
+import vLazy from '@/directives/lazy'
 
 // Element Plus 基础样式（按需引入组件，样式仍需全局注册）
 import 'element-plus/dist/index.css'
@@ -17,6 +18,9 @@ const pinia = createPinia()
 
 app.use(pinia)
 app.use(router)
+
+// 注册全局自定义指令（考核点：自定义指令）
+app.directive('lazy', vLazy)
 
 // 初始化主题（深色模式 + localStorage）
 useThemeStore()

@@ -112,7 +112,7 @@ async function handleLogin() {
 
 .login-card__subtitle {
   text-align: center;
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
   font-size: 14px;
   margin-bottom: 28px;
 }
@@ -126,6 +126,6 @@ async function handleLogin() {
   margin-top: 16px;
   text-align: center;
   font-size: 12px;
-  color: $color-text-muted;
+  color: var(--color-text-muted);
 }
 </style>

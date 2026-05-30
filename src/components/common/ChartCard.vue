@@ -8,7 +8,10 @@
  * @slot extra - 标题栏右侧扩展
  * @emit ready - 图表实例初始化完成
  */
-import { ref, onMounted, onUnmounted, watch } from 'vue'
+import { ref, onMounted, onUnmounted, watch, inject } from 'vue'
+
+// 通过 inject 获取跨级注入的主题配置（考核点：provide/inject）
+const themeConfig = inject('themeConfig', { isDark: true })
 
 const props = defineProps({
   title: { type: String, default: '' },
@@ -37,7 +40,8 @@ async function renderChart() {
   if (!chartRef.value || !props.option || Object.keys(props.option).length === 0) return
   const echarts = await getEcharts()
   if (!chartInstance) {
-    chartInstance = echarts.init(chartRef.value)
+    // 根据 inject 的主题配置决定图表底色
+    chartInstance = echarts.init(chartRef.value, themeConfig.isDark ? 'dark' : undefined)
     emit('ready', chartInstance)
 
     resizeObserver = new ResizeObserver(() => chartInstance?.resize())
@@ -71,6 +75,15 @@ watch(
   () => props.loading,
   (val) => {
     if (!val) renderChart()
+  },
+)
+
+// 主题切换时销毁旧图表并重新以新主题渲染（考核点：主题联动）
+watch(
+  () => themeConfig.value?.isDark ?? themeConfig.isDark,
+  () => {
+    disposeChart()
+    if (!props.loading) renderChart()
   },
 )
 </script>

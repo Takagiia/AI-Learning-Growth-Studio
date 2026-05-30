@@ -10,7 +10,7 @@ import { buildLineOption, buildBarOption } from '@/utils/echarts'
 
 const userStore = useUserStore()
 const stats = ref(null)
-const loading = ref(false)
+const loading = ref(true)
 
 const lineOption = computed(() => {
   if (!stats.value?.weekTrend) return {}
@@ -35,7 +35,6 @@ onMounted(async () => {
   try {
     const res = await getDashboardStatsApi()
     stats.value = res.data
-    await userStore.fetchProfile()
   } finally {
     loading.value = false
   }
@@ -87,11 +86,21 @@ onMounted(async () => {
       </el-col>
       <el-col :xs="24" :lg="16">
         <el-card class="glass-card" shadow="never">
-          <template #header>学习建议</template>
-          <p class="dashboard__tip">
-            根据你的学习数据，建议今日专注完成 2-3 个高优先级任务，并保持至少 60 分钟深度学习时间。
-            可通过左侧快捷入口进入 AI 助手获取个性化建议。
-          </p>
+          <template #header>最近学习记录</template>
+          <el-timeline>
+            <el-timeline-item timestamp="今天 14:30" placement="top" type="primary">
+              完成了「Vue3 组件化实战」第3章学习
+            </el-timeline-item>
+            <el-timeline-item timestamp="今天 10:15" placement="top" type="success">
+              完成「JavaScript 高级程序设计」2 个章节练习
+            </el-timeline-item>
+            <el-timeline-item timestamp="昨天 16:00" placement="top" type="warning">
+              新增学习计划「ECharts 可视化练习」
+            </el-timeline-item>
+            <el-timeline-item timestamp="昨天 09:30" placement="top">
+              连续学习第 128 天，AI 助手给出本周学习建议
+            </el-timeline-item>
+          </el-timeline>
         </el-card>
       </el-col>
     </el-row>
@@ -116,7 +125,7 @@ onMounted(async () => {
 }
 
 .welcome-card__desc {
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
   margin-bottom: 12px;
 }
 
@@ -135,7 +144,7 @@ onMounted(async () => {
 }
 
 .dashboard__tip {
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
   line-height: 1.8;
   font-size: 14px;
 }

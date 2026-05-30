@@ -1,39 +1,62 @@
-// SCSS 科技风主题变量
-$color-bg-primary: #0a0e1a;
+// SCSS 现代科技风主题变量（ChatGPT + Gemini 建议整合）
+// 主色：靛蓝系，降低荧光感，提升高级感
+
+// ── 背景层级 ──
+$color-bg-primary: #0b1020;
 $color-bg-secondary: #111827;
-$color-bg-tertiary: #1e293b;
-$color-bg-card: rgba(17, 24, 39, 0.72);
-$color-bg-card-hover: rgba(30, 41, 59, 0.85);
+$color-bg-tertiary: #1a2236;
+$color-bg-card: rgba(17, 24, 39, 0.78);
+$color-bg-card-hover: rgba(26, 34, 54, 0.88);
 
-$color-accent: #3b82f6;
+// ── 品牌色系（靛蓝主色 + 紫/青辅助） ──
+$color-accent: #6366f1;
 $color-accent-secondary: #8b5cf6;
-$color-accent-light: #60a5fa;
-$color-accent-gradient: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-$color-accent-glow: rgba(59, 130, 246, 0.45);
+$color-accent-tertiary: #06b6d4;
+$color-accent-light: #818cf8;
+$color-accent-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+$color-accent-glow: rgba(99, 102, 241, 0.3);
 
+// ── 文字（WCAG AA 对比度） ──
 $color-text-primary: #f1f5f9;
 $color-text-secondary: #cbd5e1;
 $color-text-muted: #94a3b8;
 
-$color-border: rgba(148, 163, 184, 0.22);
-$color-border-active: rgba(59, 130, 246, 0.5);
+// ── 边框改用微透明白色 + 阴影层级 ──
+$color-border: rgba(255, 255, 255, 0.06);
+$color-border-active: rgba(99, 102, 241, 0.4);
 
+// ── 功能色 ──
 $color-success: #22c55e;
 $color-warning: #f59e0b;
 $color-danger: #ef4444;
 
+// ── 圆角 ──
 $radius-sm: 8px;
 $radius-md: 12px;
 $radius-lg: 16px;
 $radius-xl: 20px;
 
-$shadow-card: 0 8px 32px rgba(0, 0, 0, 0.35);
-$shadow-glow: 0 0 24px rgba(59, 130, 246, 0.25);
-$glass-blur: blur(16px);
+// ── 阴影（替代强发光，增加层级感） ──
+$shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
+$shadow-card: 0 4px 24px rgba(0, 0, 0, 0.25);
+$shadow-glow: 0 0 20px rgba(99, 102, 241, 0.12);
+$glass-blur: blur(12px);
 
+// ── 布局 ──
 $sidebar-width: 220px;
 $sidebar-collapsed-width: 72px;
 $header-height: 60px;
+$spacing-global: 20px;
 
+// ── 过渡 ──
 $transition-fast: 0.2s ease;
 $transition-normal: 0.3s ease;
+
+// ── 浅色模式变量 ──
+$light-bg-primary: #f5f7fa;
+$light-bg-secondary: #ffffff;
+$light-bg-card: rgba(255, 255, 255, 0.9);
+$light-text-primary: #2d3748;
+$light-text-secondary: #718096;
+$light-border: rgba(0, 0, 0, 0.06);
+$light-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);

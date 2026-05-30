@@ -8,8 +8,8 @@ const props = defineProps({
   color: { type: String, default: '59, 130, 246' },
   /** 是否启用连线 */
   linkLines: { type: Boolean, default: true },
-  /** 透明度 0-1 */
-  opacity: { type: Number, default: 0.6 },
+  /** 透明度 0-1（降低默认值减少视觉噪点） */
+  opacity: { type: Number, default: 0.18 },
 })
 
 const canvasRef = ref(null)

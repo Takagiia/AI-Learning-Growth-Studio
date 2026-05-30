@@ -58,7 +58,9 @@ a {
 }
 
 .glass-card--glow:hover {
-  box-shadow: $shadow-card, $shadow-glow;
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.25),
+    0 0 20px rgba(99, 102, 241, 0.1);
 }
 
 // 渐变文字
@@ -72,19 +74,19 @@ a {
   @include glass-card;
 }
 
-// 页面容器
+// 页面容器（间距统一 20px，Gemini 建议）
 .page-container {
-  padding: 24px;
+  padding: $spacing-global;
   min-height: calc(100vh - var(--header-height) - 48px);
   @include scrollbar-dark;
 }
 
-// 科技网格背景（布局底层）
+// 科技网格背景（布局底层，透明度降低 50%）
 .tech-grid-bg {
   background-color: var(--color-bg-primary);
   background-image:
-    linear-gradient(rgba(59, 130, 246, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(59, 130, 246, 0.04) 1px, transparent 1px);
+    linear-gradient(rgba(99, 102, 241, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(99, 102, 241, 0.02) 1px, transparent 1px);
   background-size: 48px 48px;
 }
 
@@ -137,4 +139,63 @@ a {
 // Element Plus Loading 深色适配
 .el-loading-mask {
   background-color: rgba(10, 14, 26, 0.72) !important;
+}
+
+// ═══════════════════════════════════════
+// 浅色模式全局覆盖（CSS 变量 + 核心类）
+// ═══════════════════════════════════════
+:root[data-theme='light'],
+:root:not(.dark) {
+  --color-bg-primary: #eef0f4;
+  --color-bg-secondary: #f8f9fb;
+  --color-bg-card: rgba(255, 255, 255, 0.9);
+  --color-text-primary: #2d3748;
+  --color-text-secondary: #4a5568;
+  --color-text-muted: #718096;
+  --color-border: rgba(0, 0, 0, 0.08);
+  --shadow-card: 0 4px 16px rgba(0, 0, 0, 0.06);
+  --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.08);
+}
+
+// 浅色模式：玻璃卡片改为透明白底
+:root[data-theme='light'],
+:root:not(.dark) {
+  .glass-card {
+    background: rgba(255, 255, 255, 0.88);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  }
+
+  .glass-card--glow:hover {
+    box-shadow:
+      0 4px 16px rgba(0, 0, 0, 0.08),
+      0 0 16px rgba(99, 102, 241, 0.08);
+  }
+
+  // 浅色模式渐变文字加深，保证可读性
+  .gradient-text {
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  // 浅色模式 Loading 遮罩半透明白色
+  .el-loading-mask {
+    background-color: rgba(255, 255, 255, 0.75) !important;
+  }
+
+  // 网格背景在浅色模式下使用更淡的线条
+  .tech-grid-bg {
+    background-color: #eef0f4;
+    background-image:
+      linear-gradient(rgba(99, 102, 241, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(99, 102, 241, 0.03) 1px, transparent 1px);
+  }
+
+  // 悬停抬升在浅色模式下使用轻阴影
+  .hover-lift:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08), 0 0 16px rgba(99, 102, 241, 0.06);
+  }
 }

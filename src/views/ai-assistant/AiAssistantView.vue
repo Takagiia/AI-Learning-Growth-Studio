@@ -13,6 +13,7 @@ const messages = ref([
 ])
 const quickQuestions = ref([])
 const loading = ref(false)
+const isDev = import.meta.env.DEV
 
 function formatTime(date) {
   return date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
@@ -39,7 +40,8 @@ async function handleSend(text) {
     const res = await sendAiChatApi({ question: text })
     await minDelay
     pushMessage('assistant', res.data.content)
-  } catch {
+  } catch (err) {
+    console.error('[AI] 请求失败:', err.message || err)
     await minDelay
     pushMessage('assistant', '请求失败，请稍后重试。')
   } finally {
@@ -67,7 +69,7 @@ onMounted(async () => {
       <template #header>
         <div class="ai-page__header">
           <span class="gradient-text">AI 学习助手</span>
-          <el-tag effect="plain" type="success" size="small">Mock 智能回复</el-tag>
+          <el-tag v-if="isDev" effect="plain" type="success" size="small">Mock 智能回复</el-tag>
         </div>
       </template>
       <AIChatBox

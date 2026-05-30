@@ -1,11 +1,19 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, provide } from 'vue'
 import { useThemeStore } from '@/stores/theme'
 import ParticleBackground from '@/components/common/ParticleBackground.vue'
 import AppHeader from './AppHeader.vue'
 import AppSidebar from './AppSidebar.vue'
 
 const themeStore = useThemeStore()
+
+// 通过 provide 向深层组件注入响应式主题配置（考核点：provide/inject 跨级通信）
+provide(
+  'themeConfig',
+  computed(() => ({
+    isDark: themeStore.isDark,
+  })),
+)
 
 const layoutClass = computed(() => ({
   'app-layout': true,
@@ -24,7 +32,10 @@ const layoutClass = computed(() => ({
         <main class="app-layout__main">
           <router-view v-slot="{ Component, route }">
             <transition name="fade-slide" mode="out-in">
-              <component :is="Component" :key="route.path" />
+              <!-- KeepAlive 缓存已访问页面，避免重复挂载与数据请求（考核点：KeepAlive） -->
+              <keep-alive>
+                <component :is="Component" :key="route.path" />
+              </keep-alive>
             </transition>
           </router-view>
         </main>

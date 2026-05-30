@@ -58,7 +58,7 @@ function navigate(path) {
   border-radius: $radius-md;
   cursor: pointer;
   transition: all $transition-normal;
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
 
   &:hover {
     background: rgba(59, 130, 246, 0.12);

@@ -1,33 +1,140 @@
-// Element Plus 深色主题覆盖（配合 dark css-vars）
+// ── 深色主题（默认） ──
 :root {
-  --el-color-primary: #3b82f6;
-  --el-color-primary-light-3: #60a5fa;
-  --el-color-primary-light-5: #93c5fd;
-  --el-color-primary-light-7: #bfdbfe;
-  --el-color-primary-light-9: #1e3a5f;
-  --el-color-primary-dark-2: #2563eb;
+  --el-color-primary: #6366f1;
+  --el-color-primary-light-3: #818cf8;
+  --el-color-primary-light-5: #a5b4fc;
+  --el-color-primary-light-7: #c7d2fe;
+  --el-color-primary-light-9: #312e81;
+  --el-color-primary-dark-2: #4f46e5;
   --el-bg-color: #111827;
-  --el-bg-color-page: #0a0e1a;
+  --el-bg-color-page: #0b1020;
   --el-bg-color-overlay: rgba(17, 24, 39, 0.95);
   --el-text-color-primary: #f1f5f9;
   --el-text-color-regular: #e2e8f0;
   --el-text-color-secondary: #cbd5e1;
-  --el-border-color: rgba(148, 163, 184, 0.28);
-  --el-border-color-light: rgba(148, 163, 184, 0.12);
+  --el-border-color: rgba(255, 255, 255, 0.08);
+  --el-border-color-light: rgba(255, 255, 255, 0.04);
   --el-fill-color-blank: rgba(17, 24, 39, 0.6);
 }
 
-.el-card {
-  --el-card-bg-color: rgba(17, 24, 39, 0.72);
-  --el-card-border-color: rgba(148, 163, 184, 0.15);
-  backdrop-filter: blur(12px);
+// ── 浅色模式 ──
+:root[data-theme='light'],
+:root:not(.dark) {
+  --el-color-primary: #6366f1;
+  --el-color-primary-light-3: #818cf8;
+  --el-color-primary-light-5: #a5b4fc;
+  --el-color-primary-light-7: #c7d2fe;
+  --el-color-primary-light-9: #eef2ff;
+  --el-color-primary-dark-2: #4f46e5;
+  --el-bg-color: #ffffff;
+  --el-bg-color-page: #eef0f4;
+  --el-bg-color-overlay: rgba(255, 255, 255, 0.95);
+  --el-text-color-primary: #2d3748;
+  --el-text-color-regular: #4a5568;
+  --el-text-color-secondary: #718096;
+  --el-border-color: rgba(0, 0, 0, 0.08);
+  --el-border-color-light: rgba(0, 0, 0, 0.04);
+  --el-fill-color-blank: #ffffff;
 }
 
+// ── 卡片阴影替代边框 ──
+.el-card {
+  --el-card-bg-color: rgba(17, 24, 39, 0.78);
+  --el-card-border-color: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
+
+  :root[data-theme='light'] &,
+  :root:not(.dark) & {
+    --el-card-bg-color: rgba(255, 255, 255, 0.92);
+    --el-card-border-color: rgba(0, 0, 0, 0.06);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  }
+}
+
+// ── 按钮渐变 ──
 .el-button--primary {
-  background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
   border: none;
 
   &:hover {
-    background: linear-gradient(135deg, #60a5fa 0%, #818cf8 100%);
+    background: linear-gradient(135deg, #818cf8 0%, #a78bfa 100%);
   }
+}
+
+// ── 输入框 Focus 高亮（Gemini 建议） ──
+.el-input__wrapper,
+.el-textarea__inner {
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.el-input.is-focus .el-input__wrapper,
+.el-textarea.is-focus .el-textarea__inner {
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+  border-color: var(--el-color-primary);
+}
+
+// ── 表格 hover 淡蓝背景（Gemini 建议） ──
+.el-table {
+  --el-table-row-hover-bg-color: rgba(99, 102, 241, 0.06);
+
+  :root[data-theme='light'] &,
+  :root:not(.dark) & {
+    --el-table-row-hover-bg-color: #ebf8ff;
+  }
+}
+
+// ── 标签浅色方案（浅色模式下浅底深字） ──
+:root[data-theme='light'],
+:root:not(.dark) {
+  .el-tag--danger {
+    background: #fef2f2;
+    color: #dc2626;
+    border-color: #fecaca;
+  }
+  .el-tag--warning {
+    background: #fffbeb;
+    color: #d97706;
+    border-color: #fde68a;
+  }
+  .el-tag--success {
+    background: #f0fdf4;
+    color: #16a34a;
+    border-color: #bbf7d0;
+  }
+  .el-tag--info {
+    background: #f8fafc;
+    color: #64748b;
+    border-color: #e2e8f0;
+  }
+  .el-tag--primary {
+    background: #eef2ff;
+    color: #6366f1;
+    border-color: #c7d2fe;
+  }
+}
+
+// ── 浅色模式：el-tag plain 效果增强边线 ──
+:root[data-theme='light'],
+:root:not(.dark) {
+  .el-tag.is-plain {
+    border-width: 1.5px;
+    font-weight: 500;
+  }
+
+  // 下拉选择框浅色模式：选中文字与占位符可见
+  .el-select .el-input__wrapper {
+    color: #2d3748;
+  }
+  .el-select .el-input__inner {
+    color: #2d3748;
+    &::placeholder {
+      color: #a0aec0;
+    }
+  }
+}
+
+// ── body 过渡动画（Gemini 建议） ──
+body {
+  transition: background-color 0.3s ease, color 0.3s ease;
 }

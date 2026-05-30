@@ -1,12 +1,13 @@
 <script setup>
 import { onMounted, reactive, ref, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Plus } from '@element-plus/icons-vue'
+import { Plus, List, Grid } from '@element-plus/icons-vue'
 import { useStudyPlanStore } from '@/stores/studyPlan'
 import { PLAN_PRIORITY, PLAN_STATUS } from '@/utils/constants'
 import { debounce } from '@/utils/debounce'
 
 const planStore = useStudyPlanStore()
+const viewMode = ref('table') // 'table' | 'card'
 
 const dialogVisible = ref(false)
 const dialogTitle = ref('新增计划')
@@ -66,14 +67,12 @@ async function handleSubmit() {
     ElMessage.success('创建成功')
   }
   dialogVisible.value = false
-  planStore.fetchPlans()
 }
 
 async function handleDelete(row) {
   await ElMessageBox.confirm(`确定删除「${row.title}」？`, '提示', { type: 'warning' })
   await planStore.removePlan(row.id)
   ElMessage.success('已删除')
-  planStore.fetchPlans()
 }
 
 async function handleToggle(row) {
@@ -96,7 +95,17 @@ function handlePageChange(page) {
       <template #header>
         <div class="study-plan__header">
           <span>学习计划</span>
-          <el-button type="primary" :icon="Plus" @click="openCreate">新增计划</el-button>
+          <div class="study-plan__header-actions">
+            <el-button-group size="small">
+              <el-button :type="viewMode === 'table' ? 'primary' : ''" @click="viewMode = 'table'">
+                <el-icon><List /></el-icon>
+              </el-button>
+              <el-button :type="viewMode === 'card' ? 'primary' : ''" @click="viewMode = 'card'">
+                <el-icon><Grid /></el-icon>
+              </el-button>
+            </el-button-group>
+            <el-button type="primary" :icon="Plus" @click="openCreate">新增计划</el-button>
+          </div>
         </div>
       </template>
 
@@ -129,7 +138,8 @@ function handlePageChange(page) {
         </el-form-item>
       </el-form>
 
-      <el-table v-loading="planStore.loading" :data="planStore.plans" stripe>
+      <!-- 表格视图 -->
+      <el-table v-if="viewMode === 'table'" v-loading="planStore.loading" :data="planStore.plans" stripe>
         <el-table-column prop="title" label="标题" min-width="140" />
         <el-table-column prop="content" label="学习内容" min-width="180" show-overflow-tooltip />
         <el-table-column prop="deadline" label="截止时间" width="120" />
@@ -155,6 +165,32 @@ function handlePageChange(page) {
           </template>
         </el-table-column>
       </el-table>
+
+      <!-- 卡片视图 -->
+      <el-row v-if="viewMode === 'card'" v-loading="planStore.loading" :gutter="16">
+        <el-col v-for="plan in planStore.plans" :key="plan.id" :xs="24" :sm="12" :lg="8" class="study-plan__card-col">
+          <el-card class="glass-card hover-lift study-plan__card" shadow="never">
+            <div class="study-plan__card-header">
+              <h4>{{ plan.title }}</h4>
+              <el-tag :type="PLAN_STATUS[plan.status]?.type" size="small">
+                {{ PLAN_STATUS[plan.status]?.label }}
+              </el-tag>
+            </div>
+            <p class="study-plan__card-content">{{ plan.content }}</p>
+            <div class="study-plan__card-meta">
+              <el-tag :type="PLAN_PRIORITY[plan.priority]?.type" size="small" effect="plain">
+                {{ PLAN_PRIORITY[plan.priority]?.label }}优先级
+              </el-tag>
+              <span>截止：{{ plan.deadline }}</span>
+            </div>
+            <div class="study-plan__card-actions">
+              <el-button size="small" @click="handleToggle(plan)">切换状态</el-button>
+              <el-button size="small" type="primary" @click="openEdit(plan)">编辑</el-button>
+              <el-button size="small" type="danger" @click="handleDelete(plan)">删除</el-button>
+            </div>
+          </el-card>
+        </el-col>
+      </el-row>
 
       <el-pagination
         v-model:current-page="planStore.query.page"
@@ -205,6 +241,54 @@ function handlePageChange(page) {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.study-plan__header-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.study-plan__card-col {
+  margin-bottom: 16px;
+}
+
+.study-plan__card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+
+  h4 {
+    font-size: 15px;
+    margin: 0;
+  }
+}
+
+.study-plan__card-content {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  margin-bottom: 14px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.study-plan__card-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: var(--color-text-muted);
+  margin-bottom: 14px;
+}
+
+.study-plan__card-actions {
+  display: flex;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid $color-border;
 }
 
 .study-plan__filter {

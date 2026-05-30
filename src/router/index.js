@@ -22,7 +22,12 @@ const routes = [
   },
   {
     path: '/:pathMatch(.*)*',
-    redirect: '/dashboard',
+    // 404 提示后重定向首页（beforeEnter 支持异步）
+    beforeEnter: async () => {
+      const { ElMessage } = await import('element-plus')
+      ElMessage.warning('页面不存在，已跳转到首页')
+      return '/dashboard'
+    },
   },
 ]
 

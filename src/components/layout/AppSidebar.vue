@@ -96,7 +96,7 @@ function isActive(path) {
 
 .app-sidebar__title {
   font-size: 16px;
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
 }
 
 .app-sidebar__nav {
@@ -111,7 +111,7 @@ function isActive(path) {
   gap: 10px;
   padding: 12px 16px;
   border-radius: $radius-sm;
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
   transition: all $transition-fast;
 
   &:hover {

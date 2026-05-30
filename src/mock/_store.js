@@ -14,6 +14,13 @@ export function setCurrentUserProfile(profile) {
   currentUserProfile = profile
 }
 
+/** 共享统计指标种子，保证 Dashboard 与 Analytics 数据一致 */
+export const sharedMetrics = {
+  todayMinutes: 90,       // 今日学习分钟（Dashboard + Analytics 共用）
+  totalTasks: 12,         // 任务总数（Dashboard taskCount 与 Analytics completedTasks 关联）
+  completedRate: 72,      // 完成率%（两页共用基数）
+}
+
 export const studyPlans = [
   {
     id: '1',
@@ -42,6 +49,51 @@ export const studyPlans = [
     status: 'done',
     createdAt: '2026-05-15',
   },
+  {
+    id: '4',
+    title: 'JavaScript 算法刷题',
+    content: 'LeetCode 简单/中等题每日 2 道，整理解题思路',
+    deadline: '2026-06-15',
+    priority: 'high',
+    status: 'doing',
+    createdAt: '2026-05-22',
+  },
+  {
+    id: '5',
+    title: 'Element Plus 组件库学习',
+    content: '掌握 el-table、el-form、el-dialog 等常用组件',
+    deadline: '2026-06-08',
+    priority: 'medium',
+    status: 'pending',
+    createdAt: '2026-05-25',
+  },
+  {
+    id: '6',
+    title: 'CSS 动画与过渡练习',
+    content: '实现页面切换动画、hover 效果、loading 骨架屏',
+    deadline: '2026-06-20',
+    priority: 'low',
+    status: 'pending',
+    createdAt: '2026-05-28',
+  },
+  {
+    id: '7',
+    title: 'TypeScript 入门',
+    content: '基础类型、接口、泛型，为 Vue3+TS 项目做准备',
+    deadline: '2026-07-01',
+    priority: 'medium',
+    status: 'pending',
+    createdAt: '2026-05-30',
+  },
+  {
+    id: '8',
+    title: '项目部署与 CI/CD',
+    content: '学习 Vite 构建优化、Nginx 配置、GitHub Actions',
+    deadline: '2026-06-30',
+    priority: 'low',
+    status: 'pending',
+    createdAt: '2026-05-26',
+  },
 ]
 
 export const courses = [
@@ -54,6 +106,7 @@ export const courses = [
     progress: 72,
     teacher: '张老师',
     lessons: 48,
+    knowledgePoints: ['Composition API', 'Pinia 状态管理', 'Vue Router', '组件通信', '响应式原理'],
   },
   {
     id: '2',
@@ -64,6 +117,7 @@ export const courses = [
     progress: 45,
     teacher: '李老师',
     lessons: 60,
+    knowledgePoints: ['原型链与继承', 'Promise/async-await', 'ES6 模块化', '闭包与作用域', '事件循环'],
   },
   {
     id: '3',
@@ -74,6 +128,7 @@ export const courses = [
     progress: 30,
     teacher: '王老师',
     lessons: 80,
+    knowledgePoints: ['数组与链表', '二叉树遍历', '动态规划', '贪心算法', '哈希表'],
   },
   {
     id: '4',
@@ -84,6 +139,29 @@ export const courses = [
     progress: 58,
     teacher: '陈老师',
     lessons: 36,
+    knowledgePoints: ['高频词汇', '听力精听', '阅读理解', '写作模板', '真题演练'],
+  },
+  {
+    id: '5',
+    title: 'Python 数据分析',
+    category: 'cs',
+    cover: 'https://picsum.photos/seed/python/400/240',
+    description: '使用 Pandas、Matplotlib 进行数据清洗与可视化分析。',
+    progress: 25,
+    teacher: '赵老师',
+    lessons: 40,
+    knowledgePoints: ['Pandas', 'NumPy', 'Matplotlib', '数据清洗', '可视化'],
+  },
+  {
+    id: '6',
+    title: 'UI/UX 设计基础',
+    category: 'frontend',
+    cover: 'https://picsum.photos/seed/design/400/240',
+    description: '学习设计规范、组件化设计思维与 Figma 工具使用。',
+    progress: 15,
+    teacher: '刘老师',
+    lessons: 32,
+    knowledgePoints: ['色彩理论', '排版布局', '组件设计', 'Figma', '设计系统'],
   },
 ]
 

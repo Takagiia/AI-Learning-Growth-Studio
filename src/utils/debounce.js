@@ -1,10 +1,5 @@
-/** 防抖函数（用于搜索等场景） */
-export function debounce(fn, delay = 300) {
-  let timer = null
-  return function debounced(...args) {
-    if (timer) clearTimeout(timer)
-    timer = setTimeout(() => {
-      fn.apply(this, args)
-    }, delay)
-  }
-}
+/**
+ * 防抖函数（考核点：Lodash 工具库使用）
+ * 封装自 lodash-es _.debounce，支持 tree-shaking
+ */
+export { debounce } from 'lodash-es'

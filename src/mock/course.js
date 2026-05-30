@@ -95,7 +95,7 @@ export default [
     },
   },
   {
-    url: /\/api\/course\/[\w-]+/,
+    url: /\/api\/course\/\d+/,
     method: 'get',
     response: ({ url }) => {
       const id = url.split('/').pop()

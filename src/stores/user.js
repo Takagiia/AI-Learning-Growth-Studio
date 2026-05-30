@@ -63,6 +63,8 @@ export const useUserStore = defineStore('user', () => {
       const res = await getUserProfileApi()
       userInfo.value = { ...userInfo.value, ...res.data }
       persist()
+    } catch (err) {
+      console.warn('[user store] fetchProfile 失败，继续使用缓存数据:', err.message || err)
     } finally {
       profileLoading.value = false
     }

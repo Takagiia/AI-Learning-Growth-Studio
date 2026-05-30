@@ -69,7 +69,7 @@ function goProfile() {
 
 .app-header__breadcrumb {
   font-size: 12px;
-  color: $color-text-muted;
+  color: var(--color-text-muted);
   margin-top: 2px;
 }
 
@@ -94,7 +94,7 @@ function goProfile() {
 }
 
 .app-header__name {
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
   font-size: 14px;
 }
 </style>

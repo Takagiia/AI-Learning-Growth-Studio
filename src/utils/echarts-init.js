@@ -7,12 +7,14 @@
  */
 import * as echarts from 'echarts/core'
 import { CanvasRenderer } from 'echarts/renderers'
-import { LineChart, BarChart, PieChart } from 'echarts/charts'
+import { LineChart, BarChart, PieChart, HeatmapChart } from 'echarts/charts'
 import {
   TitleComponent,
   TooltipComponent,
   LegendComponent,
   GridComponent,
+  VisualMapComponent,
+  CalendarComponent,
 } from 'echarts/components'
 
 echarts.use([
@@ -20,10 +22,13 @@ echarts.use([
   LineChart,
   BarChart,
   PieChart,
+  HeatmapChart,
   TitleComponent,
   TooltipComponent,
   LegendComponent,
   GridComponent,
+  VisualMapComponent,
+  CalendarComponent,
 ])
 
 export default echarts

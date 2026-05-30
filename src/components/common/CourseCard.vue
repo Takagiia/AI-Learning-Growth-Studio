@@ -23,6 +23,8 @@ const categoryLabels = {
   <el-card class="course-card glass-card glass-card--glow hover-lift" shadow="never" @click="emit('click', course)">
     <div class="course-card__cover">
       <LazyImage :src="course.cover" :alt="course.title" fetchpriority="low" />
+      <!-- 渐变蒙层，确保标签在任何背景图下清晰可见 -->
+      <div class="course-card__overlay" />
       <el-tag size="small" class="course-card__tag">{{ categoryLabels[course.category] || course.category }}</el-tag>
     </div>
     <div class="course-card__body">
@@ -63,6 +65,14 @@ const categoryLabels = {
   }
 }
 
+.course-card__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
 .course-card__tag {
   position: absolute;
   top: 10px;
@@ -80,7 +90,7 @@ const categoryLabels = {
 
 .course-card__desc {
   font-size: 13px;
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -93,7 +103,7 @@ const categoryLabels = {
   display: flex;
   justify-content: space-between;
   font-size: 12px;
-  color: $color-text-muted;
+  color: var(--color-text-muted);
   margin-bottom: 12px;
 }
 
@@ -101,7 +111,7 @@ const categoryLabels = {
   display: flex;
   justify-content: space-between;
   font-size: 12px;
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
   margin-bottom: 6px;
 }
 </style>

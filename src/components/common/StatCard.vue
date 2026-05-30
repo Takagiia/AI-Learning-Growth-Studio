@@ -83,7 +83,7 @@ function handleClick() {
 
 .stat-card__label {
   font-size: 14px;
-  color: $color-text-secondary;
+  color: var(--color-text-secondary);
 }
 
 .stat-card__value {

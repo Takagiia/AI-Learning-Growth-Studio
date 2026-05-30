@@ -3,7 +3,7 @@ import { computed, onMounted, ref } from 'vue'
 import StatCard from '@/components/common/StatCard.vue'
 import ChartCard from '@/components/common/ChartCard.vue'
 import { getAnalyticsOverviewApi } from '@/api/analytics'
-import { buildLineOption, buildBarOption, buildPieOption } from '@/utils/echarts'
+import { buildLineOption, buildBarOption, buildPieOption, buildHeatmapOption } from '@/utils/echarts'
 import { Timer, DocumentChecked, Reading } from '@element-plus/icons-vue'
 
 const loading = ref(false)
@@ -53,6 +53,11 @@ const courseBarOption = computed(() => {
   })
 })
 
+const heatmapOption = computed(() => {
+  if (!data.value?.heatmap) return {}
+  return buildHeatmapOption({ data: data.value.heatmap })
+})
+
 onMounted(async () => {
   loading.value = true
   try {
@@ -93,6 +98,12 @@ onMounted(async () => {
       </el-col>
       <el-col :xs="24" :lg="12">
         <ChartCard title="课程进度" :option="courseBarOption" :loading="loading" height="340px" />
+      </el-col>
+    </el-row>
+
+    <el-row :gutter="20" class="chart-row">
+      <el-col :xs="24">
+        <ChartCard title="学习热力图" :option="heatmapOption" :loading="loading" height="220px" />
       </el-col>
     </el-row>
   </div>

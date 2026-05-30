@@ -16,4 +16,21 @@
 | 课程 | GET | `/api/course/:id` | 课程详情 |
 | AI | POST | `/api/ai/chat` | 模拟问答 |
 | AI | GET | `/api/ai/quick-questions` | 快捷问题 |
-| 分析 | GET | `/api/analytics/overview` | 数据分析总览 |
+| 分析 | GET | `/api/analytics/overview` | 数据分析总览（含热力图） |
+
+## 内存数据规模
+
+| 数据 | 数量 | 说明 |
+|------|:--:|------|
+| 学习计划 | 8 条 | 预设 3 种优先级 × 3 种状态 |
+| 课程 | 6 门 | 前端×3 / 计算机基础×2 / 语言×1 |
+| AI 问答 | 5 组关键词 | 考研/英语/Vue/时间管理/算法 |
+| 每门课程章节 | 5~8 章 | 课程专属有意义标题 |
+| 每门课程知识点 | 5 个 | 技术标签展示 |
+
+## 数据一致性
+
+- **用户资料**：登录时写入 `_store.js` 内存，profile 接口返回同一份数据
+- **totalHours**：`analytics/overview` 与 `user/profile` 共享 `currentUserProfile.totalHours`
+- **统计指标**：Dashboard 与 Analytics 共享 `sharedMetrics` 基数（todayMinutes/totalTasks/completedRate）
+- **课程详情**：正则精确匹配 `/api/course/\d+`，不与 `/api/course/list` 冲突
