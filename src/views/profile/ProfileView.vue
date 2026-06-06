@@ -4,11 +4,13 @@ import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import StatCard from '@/components/common/StatCard.vue'
 import { useUserStore } from '@/stores/user'
+import { useNoteStore } from '@/stores/notes'
 import { updateUserProfileApi } from '@/api/user'
-import { Timer, Calendar, Edit } from '@element-plus/icons-vue'
+import { Timer, Calendar, Edit, Delete, Collection } from '@element-plus/icons-vue'
 
 const router = useRouter()
 const userStore = useUserStore()
+const noteStore = useNoteStore()
 const saving = ref(false)
 const formRef = ref()
 
@@ -90,6 +92,27 @@ function handleLogout() {
         </el-form>
       </div>
     </el-card>
+
+    <el-card class="glass-card profile__notes" shadow="never">
+      <template #header>
+        <div class="notes-header">
+          <span><el-icon><Collection /></el-icon> AI 学习笔记</span>
+          <el-tag size="small" effect="plain">{{ noteStore.notes.length }} 条</el-tag>
+        </div>
+      </template>
+      
+      <el-empty v-if="!noteStore.notes.length" description="还没有笔记，快去 AI 助手聊聊吧" />
+      
+      <div v-else class="notes-list">
+        <div v-for="note in noteStore.notes" :key="note.id" class="note-item glass-card">
+          <div class="note-item__content">{{ note.content }}</div>
+          <div class="note-item__footer">
+            <span class="note-item__time">{{ note.time }}</span>
+            <el-button type="danger" link :icon="Delete" @click="noteStore.deleteNote(note.id)">删除</el-button>
+          </div>
+        </div>
+      </div>
+    </el-card>
   </div>
 </template>
 
@@ -108,5 +131,58 @@ function handleLogout() {
 .profile__form {
   flex: 1;
   min-width: 280px;
+}
+
+.profile__notes {
+  margin-top: 20px;
+}
+
+.notes-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  
+  span {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+}
+
+.notes-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.note-item {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 12px;
+  
+  &__content {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--color-text-primary);
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  &__footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--color-border);
+    padding-top: 8px;
+  }
+  
+  &__time {
+    font-size: 12px;
+    color: var(--color-text-muted);
+  }
 }
 </style>

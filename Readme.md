@@ -27,8 +27,8 @@ npm run preview
 
 ### 环境要求
 
-- Node.js >= 18
-- npm >= 9
+- Node.js >= 20.19 (推荐 v24 LTS)
+- npm >= 10
 
 ### 常见问题
 

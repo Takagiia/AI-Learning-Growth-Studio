@@ -1,6 +1,8 @@
 <script setup>
 import { ref, nextTick, watch } from 'vue'
-import { Promotion } from '@element-plus/icons-vue'
+import { Promotion, DocumentCopy } from '@element-plus/icons-vue'
+import { useNoteStore } from '@/stores/notes'
+import { ElMessage } from 'element-plus'
 
 const props = defineProps({
   messages: { type: Array, default: () => [] },
@@ -12,6 +14,7 @@ const emit = defineEmits(['send', 'quick'])
 
 const inputText = ref('')
 const listRef = ref(null)
+const noteStore = useNoteStore()
 
 async function scrollToBottom() {
   await nextTick()
@@ -43,6 +46,11 @@ function onKeydown(e) {
     handleSend()
   }
 }
+
+function saveAsNote(content) {
+  noteStore.addNote(content)
+  ElMessage.success('已保存到我的笔记')
+}
 </script>
 
 <template>
@@ -57,7 +65,19 @@ function onKeydown(e) {
         <div class="ai-chat__avatar">{{ msg.role === 'user' ? '我' : 'AI' }}</div>
         <div class="ai-chat__content">
           <p>{{ msg.content }}</p>
-          <span class="ai-chat__time">{{ msg.time }}</span>
+          <div class="ai-chat__footer">
+            <span class="ai-chat__time">{{ msg.time }}</span>
+            <el-button 
+              v-if="msg.role === 'assistant'" 
+              type="primary" 
+              link 
+              :icon="DocumentCopy" 
+              size="small"
+              @click="saveAsNote(msg.content)"
+            >
+              存为笔记
+            </el-button>
+          </div>
         </div>
       </div>
       <div v-if="loading" class="ai-chat__typing" role="status" aria-label="AI 正在输入...">
@@ -177,6 +197,12 @@ function onKeydown(e) {
   display: block;
   font-size: 11px;
   color: var(--color-text-muted);
+}
+
+.ai-chat__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-top: 6px;
 }
 

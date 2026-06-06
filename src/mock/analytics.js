@@ -30,12 +30,27 @@ export default [
           values: [120, 180, 220, 260, 310, 340],
         },
         // 学习热力图数据（日历形式，日期 → 学习分钟）
-        heatmap: Mock.mock({
-          'data|100-200': [
-            ['2026-@date("MM-dd")', '@integer(0, 180)'],
-          ],
-        }).data,
+        heatmap: generateYearHeatmapData(),
       }),
     }),
   },
 ]
+
+function generateYearHeatmapData(year = new Date().getFullYear()) {
+  const data = []
+  const start = new Date(year, 0, 1)
+  const end = new Date(year, 11, 31)
+
+  for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+    data.push([formatDate(d), Mock.mock('@integer(0, 180)')])
+  }
+
+  return data
+}
+
+function formatDate(date) {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}

@@ -105,10 +105,9 @@ export function buildBarOption({ title, labels, values, seriesName = '任务数'
       {
         name: seriesName,
         type: 'bar',
-        data: values,
         barWidth: '40%',
+        data: values,
         itemStyle: {
-          borderRadius: [6, 6, 0, 0],
           color: {
             type: 'linear',
             x: 0,
@@ -120,8 +119,98 @@ export function buildBarOption({ title, labels, values, seriesName = '任务数'
               { offset: 1, color: CHART_COLORS[0] },
             ],
           },
+          borderRadius: [4, 4, 0, 0],
         },
         emphasis: { focus: 'series' },
+      },
+    ],
+  }
+}
+
+/** 学习热力图 option */
+export function buildHeatmapOption({ data = [], year, isDark = true }) {
+  const theme = getChartTheme(isDark)
+  const dates = data.map((item) => item[0]).filter(Boolean).sort()
+  const values = data.map((item) => Number(item[1]) || 0)
+  const maxValue = Math.max(...values, 0)
+  const usesMinuteScale = maxValue > 5
+  const range = year ?? (dates.length ? [dates[0], dates[dates.length - 1]] : new Date().getFullYear())
+
+  return {
+    ...theme,
+    tooltip: {
+      position: 'top',
+      formatter: (params) => {
+        const [date, value] = Array.isArray(params.value) ? params.value : ['', params.value]
+        return usesMinuteScale ? `${date}：${value} 分钟` : `${date}：${value}`
+      },
+    },
+    visualMap: usesMinuteScale
+      ? {
+          min: 0,
+          max: Math.max(maxValue, 180),
+          type: 'piecewise',
+          orient: 'horizontal',
+          left: 'center',
+          bottom: 0,
+          textStyle: { color: isDark ? '#94a3b8' : '#718096' },
+          pieces: [
+            { min: 120, label: '120分钟以上', color: '#6366f1' },
+            { min: 60, max: 119, label: '60-119分钟', color: '#8b5cf6' },
+            { min: 30, max: 59, label: '30-59分钟', color: '#06b6d4' },
+            { min: 1, max: 29, label: '1-29分钟', color: '#a5b4fc' },
+            { min: 0, max: 0, label: '未学习', color: isDark ? '#1e293b' : '#e5e7eb' },
+          ],
+        }
+      : {
+          min: 0,
+          max: Math.max(maxValue, 5),
+          calculable: true,
+          orient: 'horizontal',
+          left: 'center',
+          bottom: '0%',
+          inRange: {
+            color: isDark
+              ? ['rgba(59, 130, 246, 0.1)', '#3b82f6']
+              : ['#eff6ff', '#1d4ed8'],
+          },
+          show: false,
+        },
+    calendar: {
+      top: 30,
+      left: 30,
+      right: 30,
+      range,
+      cellSize: ['auto', usesMinuteScale ? 14 : 13],
+      splitLine: usesMinuteScale
+        ? { lineStyle: { color: isDark ? '#1e293b' : '#e2e8f0' } }
+        : { show: false },
+      itemStyle: {
+        borderWidth: 2,
+        borderColor: isDark ? (usesMinuteScale ? '#0b1020' : 'rgba(0,0,0,0.2)') : '#fff',
+        color: isDark ? 'rgba(255,255,255,0.05)' : '#f3f4f6',
+        borderRadius: 2,
+      },
+      yearLabel: { show: false },
+      dayLabel: {
+        color: isDark ? '#94a3b8' : '#718096',
+        fontSize: 10,
+        margin: usesMinuteScale ? 4 : undefined,
+        nameMap: 'cn',
+      },
+      monthLabel: {
+        color: isDark ? '#94a3b8' : '#718096',
+        fontSize: 10,
+        margin: usesMinuteScale ? 8 : undefined,
+        align: usesMinuteScale ? 'left' : undefined,
+        nameMap: 'cn',
+      },
+    },
+    series: [
+      {
+        type: 'heatmap',
+        coordinateSystem: 'calendar',
+        data,
       },
     ],
   }
@@ -156,46 +245,3 @@ export function buildPieOption({ title, data, isDark = true }) {
   }
 }
 
-/** 学习热力图（日历形式，展示每日学习时长分布） */
-export function buildHeatmapOption({ data, year = 2026, isDark = true }) {
-  return {
-    tooltip: {
-      formatter: (p) => `${p.value[0]}：${p.value[1]} 分钟`,
-    },
-    visualMap: {
-      min: 0,
-      max: 180,
-      type: 'piecewise',
-      orient: 'horizontal',
-      left: 'center',
-      bottom: 0,
-      textStyle: { color: isDark ? '#94a3b8' : '#718096' },
-      pieces: [
-        { min: 120, label: '120分钟以上', color: '#6366f1' },
-        { min: 60, max: 119, label: '60-119分钟', color: '#8b5cf6' },
-        { min: 30, max: 59, label: '30-59分钟', color: '#06b6d4' },
-        { min: 1, max: 29, label: '1-29分钟', color: '#a5b4fc' },
-        { min: 0, max: 0, label: '未学习', color: isDark ? '#1e293b' : '#e5e7eb' },
-      ],
-    },
-    calendar: {
-      top: 30,
-      left: 30,
-      right: 30,
-      range: year,
-      cellSize: ['auto', 14],
-      splitLine: { lineStyle: { color: isDark ? '#1e293b' : '#e2e8f0' } },
-      itemStyle: { borderColor: isDark ? '#0b1020' : '#fff', borderWidth: 2 },
-      dayLabel: { color: isDark ? '#94a3b8' : '#718096', margin: 4 },
-      monthLabel: { color: isDark ? '#94a3b8' : '#718096', margin: 8, align: 'left' },
-      yearLabel: { show: false },
-    },
-    series: [
-      {
-        type: 'heatmap',
-        coordinateSystem: 'calendar',
-        data,
-      },
-    ],
-  }
-}

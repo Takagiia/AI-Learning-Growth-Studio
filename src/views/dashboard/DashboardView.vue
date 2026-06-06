@@ -6,9 +6,11 @@ import ChartCard from '@/components/common/ChartCard.vue'
 import QuickEntry from '@/components/common/QuickEntry.vue'
 import { getDashboardStatsApi } from '@/api/dashboard'
 import { useUserStore } from '@/stores/user'
-import { buildLineOption, buildBarOption } from '@/utils/echarts'
+import { useThemeStore } from '@/stores/theme'
+import { buildLineOption, buildBarOption, buildHeatmapOption } from '@/utils/echarts'
 
 const userStore = useUserStore()
+const themeStore = useThemeStore()
 const stats = ref(null)
 const loading = ref(true)
 
@@ -18,6 +20,7 @@ const lineOption = computed(() => {
     labels: stats.value.weekTrend.labels,
     values: stats.value.weekTrend.values,
     seriesName: '学习分钟',
+    isDark: themeStore.isDark,
   })
 })
 
@@ -27,6 +30,15 @@ const barOption = computed(() => {
     labels: stats.value.weekTrend.labels,
     values: stats.value.weekTrend.values.map((v) => Math.round(v / 10)),
     seriesName: '任务强度',
+    isDark: themeStore.isDark,
+  })
+})
+
+const heatmapOption = computed(() => {
+  if (!stats.value?.heatmap) return {}
+  return buildHeatmapOption({
+    data: stats.value.heatmap,
+    isDark: themeStore.isDark,
   })
 })
 
@@ -68,6 +80,12 @@ onMounted(async () => {
       </el-col>
       <el-col :xs="24" :sm="8">
         <StatCard label="完成率" :value="stats?.completedRate ?? '--'" unit="%" :icon="CircleCheck" color="#22c55e" />
+      </el-col>
+    </el-row>
+
+    <el-row :gutter="20">
+      <el-col :span="24">
+        <ChartCard title="学习活跃热力图" :option="heatmapOption" :loading="loading" height="200px" />
       </el-col>
     </el-row>
 
