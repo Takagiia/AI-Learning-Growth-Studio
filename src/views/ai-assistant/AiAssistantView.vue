@@ -69,7 +69,7 @@ onMounted(async () => {
       <template #header>
         <div class="ai-page__header">
           <span class="gradient-text">AI 学习助手</span>
-          <el-tag v-if="isDev" effect="plain" type="success" size="small">Mock 智能回复</el-tag>
+          <el-tag v-if="isDev" effect="plain" type="success" size="small">Spring Boot API</el-tag>
         </div>
       </template>
       <AIChatBox

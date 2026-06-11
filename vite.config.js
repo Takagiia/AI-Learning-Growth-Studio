@@ -5,7 +5,6 @@ import { fileURLToPath } from 'node:url'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
-import { viteMockServe } from 'vite-plugin-mock'
 import viteCompression from 'vite-plugin-compression'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -17,21 +16,15 @@ export default defineConfig(({ command }) => ({
     AutoImport({
       imports: ['vue', 'vue-router', 'pinia'],
       resolvers: [ElementPlusResolver()],
-      dts: false,
+      dts: false
     }),
     Components({
       resolvers: [ElementPlusResolver()],
-      dts: false,
-    }),
-    viteMockServe({
-      mockPath: 'src/mock',
-      enable: command === 'serve',
-      watchFiles: true,
-      logger: true,
+      dts: false
     }),
     // 构建时生成 .gz / .br 压缩文件，配合部署服务器直接返回预压缩资源
     viteCompression({ algorithm: 'gzip', ext: '.gz', threshold: 1024, deleteOriginFile: false }),
-    viteCompression({ algorithm: 'brotliCompress', ext: '.br', threshold: 1024, deleteOriginFile: false }),
+    viteCompression({ algorithm: 'brotliCompress', ext: '.br', threshold: 1024, deleteOriginFile: false })
   ],
   resolve: {
     alias: {
@@ -40,6 +33,12 @@ export default defineConfig(({ command }) => ({
   },
   server: {
     port: 5173,
+    proxy: {
+      '/api': {
+        target: 'http://127.0.0.1:8080',
+        changeOrigin: true,
+      },
+    },
   },
   css: {
     preprocessorOptions: {

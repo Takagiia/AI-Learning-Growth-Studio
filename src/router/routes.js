@@ -19,10 +19,40 @@ export const layoutRoutes = [
     meta: { title: '学习计划', icon: 'Calendar', requiresAuth: true },
   },
   {
+    path: 'pomodoro',
+    name: 'Pomodoro',
+    component: () => import(/* webpackChunkName: "pomodoro" */ '@/views/pomodoro/PomodoroView.vue'),
+    meta: { title: '番茄专注', icon: 'AlarmClock', requiresAuth: true },
+  },
+  {
     path: 'course',
     name: 'Course',
     component: () => import(/* webpackChunkName: "course" */ '@/views/course/CourseView.vue'),
     meta: { title: '课程管理', icon: 'Reading', requiresAuth: true },
+  },
+  {
+    path: 'note',
+    name: 'Note',
+    component: () => import(/* webpackChunkName: "note" */ '@/views/note/NoteView.vue'),
+    meta: { title: '笔记管理', icon: 'Document', requiresAuth: true },
+  },
+  {
+    path: 'wrong-question',
+    name: 'WrongQuestion',
+    component: () => import(/* webpackChunkName: "wrong-question" */ '@/views/wrongQuestion/WrongQuestionView.vue'),
+    meta: { title: '错题本', icon: 'Warning', requiresAuth: true },
+  },
+  {
+    path: 'resource',
+    name: 'Resource',
+    component: () => import(/* webpackChunkName: "resource" */ '@/views/resource/ResourceView.vue'),
+    meta: { title: '学习资源', icon: 'FolderOpened', requiresAuth: true },
+  },
+  {
+    path: 'achievement',
+    name: 'Achievement',
+    component: () => import(/* webpackChunkName: "achievement" */ '@/views/achievement/AchievementView.vue'),
+    meta: { title: '成就系统', icon: 'Trophy', requiresAuth: true },
   },
   {
     path: 'ai-assistant',

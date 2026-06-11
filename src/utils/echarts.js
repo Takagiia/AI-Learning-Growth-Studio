@@ -127,14 +127,63 @@ export function buildBarOption({ title, labels, values, seriesName = '任务数'
   }
 }
 
+/** 把各种日期格式归一化为 YYYY-MM-DD（echarts calendar 必需） */
+function normalizeDate(input) {
+  if (input == null) return ''
+  if (typeof input === 'number') {
+    // 纯数字按时间戳处理
+    const d = new Date(input)
+    if (Number.isNaN(d.getTime())) return ''
+    return formatYMD(d)
+  }
+  const str = String(input).trim()
+  if (!str) return ''
+  // 已经是 YYYY-MM-DD
+  if (/^\d{4}-\d{1,2}-\d{1,2}$/.test(str)) {
+    const [y, m, d] = str.split('-')
+    return `${y}-${pad(m)}-${pad(d)}`
+  }
+  // YYYY/MM/DD 或 YYYY.MM.DD 或 YYYY_MM_DD
+  const m1 = str.match(/^(\d{4})[\/.\u5e74](\d{1,2})[\/.\u6708](\d{1,2})/)
+  if (m1) return `${m1[1]}-${pad(m1[2])}-${pad(m1[3])}`
+  // MM/DD/YYYY
+  const m2 = str.match(/^(\d{1,2})[\/.\u6708](\d{1,2})[\/.\u65e5](\d{4})/)
+  if (m2) return `${m2[3]}-${pad(m2[1])}-${pad(m2[2])}`
+  // ISO 8601 / RFC 2822 等
+  const d = new Date(str)
+  if (!Number.isNaN(d.getTime())) return formatYMD(d)
+  return ''
+}
+
+function pad(n) {
+  return String(n).padStart(2, '0')
+}
+function formatYMD(d) {
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
+}
+
 /** 学习热力图 option */
 export function buildHeatmapOption({ data = [], year, isDark = true }) {
   const theme = getChartTheme(isDark)
-  const dates = data.map((item) => item[0]).filter(Boolean).sort()
-  const values = data.map((item) => Number(item[1]) || 0)
+  // 归一化日期 + 过滤无效项
+  const normalized = (Array.isArray(data) ? data : [])
+    .map((item) => {
+      if (!Array.isArray(item) || item.length < 2) return null
+      const date = normalizeDate(item[0])
+      if (!date) return null
+      return [date, Number(item[1]) || 0]
+    })
+    .filter(Boolean)
+    .sort((a, b) => (a[0] < b[0] ? -1 : 1))
+
+  const values = normalized.map(([, v]) => v)
   const maxValue = Math.max(...values, 0)
   const usesMinuteScale = maxValue > 5
-  const range = year ?? (dates.length ? [dates[0], dates[dates.length - 1]] : new Date().getFullYear())
+  const range =
+    year ??
+    (normalized.length
+      ? [normalized[0][0], normalized[normalized.length - 1][0]]
+      : new Date().getFullYear())
 
   return {
     ...theme,
@@ -210,7 +259,7 @@ export function buildHeatmapOption({ data = [], year, isDark = true }) {
       {
         type: 'heatmap',
         coordinateSystem: 'calendar',
-        data,
+        data: normalized,
       },
     ],
   }

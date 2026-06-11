@@ -8,7 +8,7 @@
  * @slot extra - 标题栏右侧扩展
  * @emit ready - 图表实例初始化完成
  */
-import { ref, onMounted, onUnmounted, watch, inject } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch, inject } from 'vue'
 
 // 通过 inject 获取跨级注入的主题配置（考核点：provide/inject）
 const themeConfig = inject('themeConfig', { isDark: true })
@@ -19,6 +19,12 @@ const props = defineProps({
   option: { type: Object, default: () => ({}) },
   loading: { type: Boolean, default: false },
 })
+
+const isEmpty = computed(
+  () => !props.option || Object.keys(props.option).length === 0 || (props.option.series || []).every(
+    (s) => Array.isArray(s.data) && s.data.length === 0,
+  ),
+)
 
 const emit = defineEmits(['ready'])
 
@@ -37,7 +43,7 @@ async function getEcharts() {
 }
 
 async function renderChart() {
-  if (!chartRef.value || !props.option || Object.keys(props.option).length === 0) return
+  if (!chartRef.value || isEmpty.value) return
   const echarts = await getEcharts()
   if (!chartInstance) {
     // 根据 inject 的主题配置决定图表底色
@@ -94,7 +100,12 @@ watch(
       <span>{{ title }}</span>
       <slot name="extra" />
     </template>
-    <div ref="chartRef" class="chart-card__canvas" :style="{ height }" />
+    <div v-if="isEmpty" class="chart-card__empty">
+      <slot name="empty">
+        <el-empty description="暂无数据" :image-size="80" />
+      </slot>
+    </div>
+    <div v-else ref="chartRef" class="chart-card__canvas" :style="{ height }" />
     <slot />
   </el-card>
 </template>
@@ -103,5 +114,13 @@ watch(
 .chart-card__canvas {
   width: 100%;
   min-height: 200px;
+}
+
+.chart-card__empty {
+  width: 100%;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 </style>

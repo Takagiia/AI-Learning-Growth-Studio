@@ -1,6 +1,6 @@
 <script setup>
 import { ref, nextTick, watch } from 'vue'
-import { Promotion, DocumentCopy } from '@element-plus/icons-vue'
+import { MagicStick, DocumentCopy } from '@element-plus/icons-vue'
 import { useNoteStore } from '@/stores/notes'
 import { ElMessage } from 'element-plus'
 
@@ -109,7 +109,7 @@ function saveAsNote(content) {
         resize="none"
         @keydown="onKeydown"
       />
-      <el-button type="primary" :icon="Promotion" :loading="loading" :disabled="loading" @click="handleSend">发送</el-button>
+      <el-button type="primary" :icon="MagicStick" :loading="loading" :disabled="loading" @click="handleSend">发送</el-button>
     </div>
   </div>
 </template>

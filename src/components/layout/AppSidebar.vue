@@ -8,6 +8,10 @@ import {
   ChatDotRound,
   DataAnalysis,
   User,
+  Document,
+  Warning,
+  FolderOpened,
+  Trophy,
 } from '@element-plus/icons-vue'
 import { getMenuItems } from '@/router/routes'
 import { useThemeStore } from '@/stores/theme'
@@ -22,6 +26,10 @@ const iconMap = {
   ChatDotRound,
   DataAnalysis,
   User,
+  Document,
+  Warning,
+  FolderOpened,
+  Trophy,
 }
 
 const menuItems = computed(() =>
@@ -42,8 +50,11 @@ function isActive(path) {
     :class="{ 'app-sidebar--collapsed': themeStore.sidebarCollapsed }"
   >
     <div class="app-sidebar__brand">
-      <span class="gradient-text app-sidebar__logo">AI</span>
-      <span v-show="!themeStore.sidebarCollapsed" class="app-sidebar__title">Learning</span>
+      <span class="app-sidebar__logo-mark">A</span>
+      <div v-show="!themeStore.sidebarCollapsed" class="app-sidebar__brand-copy">
+        <span class="gradient-text app-sidebar__logo">AI Learning</span>
+        <span class="app-sidebar__title">Growth Studio</span>
+      </div>
     </div>
     <nav class="app-sidebar__nav">
       <router-link
@@ -85,18 +96,38 @@ function isActive(path) {
 .app-sidebar__brand {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
   padding: 8px 12px 24px;
   font-weight: 700;
 }
 
+.app-sidebar__logo-mark {
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6, #06b6d4);
+  color: #fff;
+  font-size: 18px;
+  box-shadow: 0 12px 30px rgba(99, 102, 241, 0.28);
+}
+
+.app-sidebar__brand-copy {
+  display: flex;
+  flex-direction: column;
+}
+
 .app-sidebar__logo {
-  font-size: 22px;
+  font-size: 18px;
 }
 
 .app-sidebar__title {
-  font-size: 16px;
-  color: var(--color-text-secondary);
+  font-size: 12px;
+  color: var(--color-text-muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .app-sidebar__nav {

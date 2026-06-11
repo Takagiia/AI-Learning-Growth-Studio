@@ -4,7 +4,7 @@ import { useUserStore } from '@/stores/user'
 
 /** Axios 统一实例 */
 const request = axios.create({
-  baseURL: '/api',
+  baseURL: 'http://127.0.0.1:8080/api',
   timeout: 15000,
   headers: {
     'Content-Type': 'application/json',
@@ -48,6 +48,7 @@ async function handleUnauthorized(message) {
 /** 请求拦截器 */
 request.interceptors.request.use(
   (config) => {
+    console.log(`[API Request] ${config.method.toUpperCase()} ${config.url}`, config.data || config.params || '')
     if (config.showLoading !== false) {
       showLoading(config.loadingText)
     }
@@ -58,6 +59,7 @@ request.interceptors.request.use(
     return config
   },
   (error) => {
+    console.error(`[API Error] ${error.config?.url}`, error)
     hideLoading()
     return Promise.reject(error)
   },
@@ -66,6 +68,7 @@ request.interceptors.request.use(
 /** 响应拦截器 */
 request.interceptors.response.use(
   (response) => {
+    console.log(`[API Response] ${response.config.url}`, response.data)
     hideLoading()
     const res = response.data
 

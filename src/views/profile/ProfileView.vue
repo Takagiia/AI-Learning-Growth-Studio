@@ -5,7 +5,7 @@ import { ElMessage } from 'element-plus'
 import StatCard from '@/components/common/StatCard.vue'
 import { useUserStore } from '@/stores/user'
 import { useNoteStore } from '@/stores/notes'
-import { updateUserProfileApi } from '@/api/user'
+import { updateUserProfileApi, logoutApi } from '@/api/user'
 import { Timer, Calendar, Edit, Delete, Collection } from '@element-plus/icons-vue'
 
 const router = useRouter()
@@ -48,7 +48,12 @@ async function handleSave() {
   }
 }
 
-function handleLogout() {
+async function handleLogout() {
+  try {
+    await logoutApi()
+  } catch {
+    // 无论后端是否成功响应，都确保前端退出本地登录态
+  }
   userStore.logout()
   ElMessage.success('已退出登录')
   router.push({ name: 'Login' })

@@ -23,6 +23,7 @@ app.use(router)
 app.directive('lazy', vLazy)
 
 // 初始化主题（深色模式 + localStorage）
-useThemeStore()
+const themeStore = useThemeStore()
+themeStore.loadFromStorage()
 
 app.mount('#app')

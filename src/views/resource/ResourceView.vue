@@ -1,0 +1,424 @@
+<template>
+  <div class="resource-page">
+    <div class="page-header">
+      <h2 class="page-title">
+        <el-icon><FolderOpened /></el-icon>
+        学习资源库
+      </h2>
+      <el-button type="primary" @click="handleUpload">
+        <el-icon><Upload /></el-icon>
+        上传资源
+      </el-button>
+    </div>
+
+    <div class="filter-bar">
+      <el-select v-model="filterCategory" placeholder="分类" clearable @change="handleFilter">
+        <el-option
+          v-for="cat in categories"
+          :key="cat.id"
+          :label="cat.name"
+          :value="cat.id"
+        />
+      </el-select>
+      <el-select v-model="filterType" placeholder="文件类型" clearable @change="handleFilter">
+        <el-option v-for="t in ['pdf', 'docx', 'mp4', 'zip', 'md', 'xlsx', 'png']" :key="t" :label="t.toUpperCase()" :value="t" />
+      </el-select>
+      <el-input
+        v-model="searchKeyword"
+        placeholder="搜索资源..."
+        clearable
+        :prefix-icon="Search"
+        style="width: 300px"
+        @input="handleSearch"
+      />
+    </div>
+
+    <div class="resources-grid" v-loading="loading">
+      <div
+        v-for="resource in resources"
+        :key="resource.id"
+        class="resource-card"
+        @click="handleOpen(resource)"
+      >
+        <div class="resource-icon">
+          <el-icon :size="48"><component :is="getFileIcon(resource.type)" /></el-icon>
+        </div>
+        <div class="resource-info">
+          <div class="resource-title" :title="resource.title">{{ resource.title }}</div>
+          <div class="resource-desc">{{ resource.description }}</div>
+          <div class="resource-meta">
+            <span class="resource-size">{{ resource.size }}</span>
+            <span class="resource-downloads">
+              <el-icon><Download /></el-icon>
+              {{ resource.downloadCount }}
+            </span>
+            <span class="resource-time">{{ resource.createTime?.split(' ')[0] }}</span>
+          </div>
+        </div>
+        <div class="resource-actions" @click.stop>
+          <el-button type="primary" size="small" @click="handleDownload(resource)">
+            <el-icon><Download /></el-icon>
+            下载
+          </el-button>
+          <el-button type="danger" size="small" link @click="handleDelete(resource.id)">
+            <el-icon><Delete /></el-icon>
+          </el-button>
+        </div>
+      </div>
+    </div>
+
+    <div class="pagination-container">
+      <el-pagination
+        v-model:current-page="query.page"
+        v-model:page-size="query.pageSize"
+        :total="total"
+        :page-sizes="[12, 24, 48]"
+        layout="total, sizes, prev, pager, next, jumper"
+        @size-change="handleFilter"
+        @current-change="handleFilter"
+      />
+    </div>
+
+    <el-dialog
+      v-model="uploadDialogVisible"
+      title="上传资源"
+      width="500px"
+    >
+      <el-form :model="uploadForm" label-width="80px">
+        <el-form-item label="标题">
+          <el-input v-model="uploadForm.title" placeholder="请输入资源标题" />
+        </el-form-item>
+        <el-form-item label="分类">
+          <el-select v-model="uploadForm.category" placeholder="选择分类">
+            <el-option
+              v-for="cat in categories.filter(c => c.id !== 'all')"
+              :key="cat.id"
+              :label="cat.name"
+              :value="cat.id"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="描述">
+          <el-input
+            v-model="uploadForm.description"
+            type="textarea"
+            :rows="3"
+            placeholder="请输入资源描述"
+          />
+        </el-form-item>
+        <el-form-item label="文件">
+          <el-upload
+            drag
+            action="#"
+            :auto-upload="false"
+            :on-change="handleFileChange"
+          >
+            <el-icon class="el-icon--upload"><UploadFilled /></el-icon>
+            <div class="el-upload__text">
+              将文件拖到此处，或<em>点击上传</em>
+            </div>
+          </el-upload>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="uploadDialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="handleSaveUpload" :loading="uploadLoading">上传</el-button>
+      </template>
+    </el-dialog>
+  </div>
+</template>
+
+<script setup>
+import { ref, computed, onMounted } from 'vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import {
+  FolderOpened,
+  Upload,
+  Search,
+  Download,
+  Delete,
+  UploadFilled,
+  Document,
+  VideoCamera,
+  Files,
+  Picture,
+  Box,
+} from '@element-plus/icons-vue'
+import { useResourceStore } from '@/stores/resource'
+import { debounce } from 'lodash-es'
+import { downloadResourceApi } from '@/api/resource'
+import request from '@/api/request'
+
+const resourceStore = useResourceStore()
+
+const loading = computed(() => resourceStore.loading)
+const resources = computed(() => resourceStore.resources)
+const total = computed(() => resourceStore.total)
+const categories = computed(() => resourceStore.categories)
+const query = computed({
+  get: () => resourceStore.query,
+  set: (val) => { resourceStore.query = val }
+})
+
+const filterCategory = ref('')
+const filterType = ref('')
+const searchKeyword = ref('')
+const uploadDialogVisible = ref(false)
+const uploadForm = ref({
+  title: '',
+  category: '',
+  description: '',
+  file: null,
+})
+const uploadLoading = ref(false)
+
+onMounted(() => {
+  resourceStore.fetchResources()
+  resourceStore.fetchCategories()
+})
+
+const handleFilter = () => {
+  resourceStore.fetchResources({
+    category: filterCategory.value,
+    type: filterType.value,
+    keyword: searchKeyword.value,
+    page: query.value.page,
+    pageSize: query.value.pageSize,
+  })
+}
+
+const handleSearch = debounce(() => {
+  handleFilter()
+}, 400)
+
+const handleUpload = () => {
+  uploadForm.value = { title: '', category: '', description: '', file: null }
+  uploadDialogVisible.value = true
+}
+
+const handleFileChange = (file) => {
+  uploadForm.value.file = file.raw
+}
+
+const handleSaveUpload = async () => {
+  if (!uploadForm.value.title) {
+    ElMessage.warning('请输入标题')
+    return
+  }
+  if (!uploadForm.value.file) {
+    ElMessage.warning('请选择文件')
+    return
+  }
+  
+  try {
+    uploadLoading.value = true
+    const formData = new FormData()
+    formData.append('file', uploadForm.value.file)
+    formData.append('title', uploadForm.value.title)
+    if (uploadForm.value.category) {
+      formData.append('category', uploadForm.value.category)
+    }
+    if (uploadForm.value.description) {
+      formData.append('description', uploadForm.value.description)
+    }
+    await resourceStore.uploadResource(formData)
+    ElMessage.success('上传成功')
+    uploadDialogVisible.value = false
+    handleFilter()
+  } catch (e) {
+    console.error('上传失败:', e)
+    ElMessage.error('上传失败')
+  } finally {
+    uploadLoading.value = false
+  }
+}
+
+const handleOpen = (resource) => {
+  ElMessage.info('资源详情')
+}
+
+const handleDownload = async (resource) => {
+  try {
+    const res = await request.get(`/api/resource/download/${resource.id}`, {
+      responseType: 'blob'
+    })
+    
+    const url = window.URL.createObjectURL(new Blob([res.data]))
+    const link = document.createElement('a')
+    link.href = url
+    
+    let filename = resource.title
+    if (!filename.includes('.')) {
+      const ext = {
+        pdf: '.pdf',
+        docx: '.docx',
+        md: '.md',
+        xlsx: '.xlsx',
+        mp4: '.mp4',
+        zip: '.zip',
+        png: '.png'
+      }[resource.type] || ''
+      filename += ext
+    }
+    
+    link.download = filename
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(url)
+    
+    ElMessage.success(`开始下载: ${resource.title}`)
+    handleFilter()
+  } catch (e) {
+    console.warn('[resource] download failed:', e?.message || e)
+    ElMessage.error('下载失败，请稍后重试')
+  }
+}
+
+const handleDelete = async (id) => {
+  try {
+    await ElMessageBox.confirm('确定要删除这个资源吗？', '提示', {
+      type: 'warning',
+    })
+    await resourceStore.removeResource(id)
+    ElMessage.success('删除成功')
+    handleFilter()
+  } catch (e) {
+    if (e !== 'cancel') {
+      ElMessage.error('删除失败')
+    }
+  }
+}
+
+const getFileIcon = (type) => {
+  const map = {
+    pdf: Document,
+    docx: Document,
+    md: Document,
+    xlsx: Document,
+    mp4: VideoCamera,
+    zip: Box,
+    png: Picture,
+  }
+  return map[type] || Files
+}
+</script>
+
+<style scoped lang="scss">
+.resource-page {
+  padding: 24px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  
+  .page-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 24px;
+    margin: 0;
+    color: var(--text-primary);
+  }
+}
+
+.filter-bar {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.resources-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.resource-card {
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  gap: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid var(--border-color);
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+  }
+}
+
+.resource-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--primary-color), #8b5cf6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  flex-shrink: 0;
+}
+
+.resource-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.resource-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.resource-desc {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  flex: 1;
+}
+
+.resource-meta {
+  display: flex;
+  gap: 16px;
+  font-size: 12px;
+  color: var(--text-muted);
+  
+  .resource-downloads {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+}
+
+.resource-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  padding-top: 16px;
+}
+</style>

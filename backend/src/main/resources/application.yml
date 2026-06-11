@@ -1,0 +1,52 @@
+server:
+  port: 8080
+  tomcat:
+    accesslog:
+      enabled: true
+      directory: logs
+      prefix: access_log
+      suffix: .log
+      pattern: common
+
+spring:
+  application:
+    name: ai-learning-backend
+  datasource:
+    url: jdbc:mysql://localhost:3306/ai_learning?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&createDatabaseIfNotExist=true
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+    defer-datasource-initialization: true
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
+      data-locations: classpath:data.sql
+  jackson:
+    time-zone: Asia/Shanghai
+    date-format: yyyy-MM-dd HH:mm:ss
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.springframework.web: DEBUG
+    com.ailearning.backend: DEBUG
+
+app:
+  auth:
+    jwt-secret: ai-learning-backend-super-secret-key-2026
+    jwt-expire-minutes: 1440
+  file:
+    upload-dir: ./uploads
+  deepseek:
+    api-key: your-api-key-here
+    base-url: https://api.deepseek.com
+    model: deepseek-v4-pro
+    system-prompt: 你是一个专业的AI学习助手，帮助用户解答学习相关的问题。

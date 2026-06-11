@@ -5,6 +5,14 @@ export function loginApi(data) {
   return request.post('/user/login', data)
 }
 
+export function registerApi(data) {
+  return request.post('/user/register', data)
+}
+
+export function logoutApi() {
+  return request.post('/user/logout', {})
+}
+
 export function getUserProfileApi() {
   return request.get('/user/profile')
 }

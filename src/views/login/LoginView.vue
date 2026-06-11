@@ -1,24 +1,34 @@
 <script setup>
-import { reactive, ref } from 'vue'
+import { reactive, ref, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
+import { Trophy, DataAnalysis, MagicStick } from '@element-plus/icons-vue'
 import ParticleBackground from '@/components/common/ParticleBackground.vue'
 import { useUserStore } from '@/stores/user'
 import { useThemeStore } from '@/stores/theme'
-import { loginApi } from '@/api/user'
+import { loginApi, registerApi } from '@/api/user'
+import heroImage from '@/assets/hero.png'
 
 const router = useRouter()
 const route = useRoute()
 const userStore = useUserStore()
 const themeStore = useThemeStore()
 const loading = ref(false)
+const activeTab = ref('login') // 'login' | 'register'
 
-const form = reactive({
+const loginForm = reactive({
   username: 'admin',
   password: '123456',
 })
 
-const rules = {
+const registerForm = reactive({
+  username: '',
+  password: '',
+  confirmPassword: '',
+  nickname: '',
+})
+
+const loginRules = {
   username: [
     { required: true, message: '请输入账号', trigger: 'blur' },
     { min: 3, max: 20, message: '账号长度 3-20 位', trigger: 'blur' },
@@ -29,13 +39,48 @@ const rules = {
   ],
 }
 
-const formRef = ref()
+const registerRules = {
+  username: [
+    { required: true, message: '请输入账号', trigger: 'blur' },
+    { min: 3, max: 20, message: '账号长度 3-20 位', trigger: 'blur' },
+  ],
+  password: [
+    { required: true, message: '请输入密码', trigger: 'blur' },
+    { min: 6, max: 32, message: '密码长度 6-32 位', trigger: 'blur' },
+  ],
+  confirmPassword: [
+    { required: true, message: '请再次输入密码', trigger: 'blur' },
+    {
+      validator: (_rule, value, callback) => {
+        if (value !== registerForm.password) {
+          callback(new Error('两次输入的密码不一致'))
+        } else {
+          callback()
+        }
+      },
+      trigger: 'blur',
+    },
+  ],
+  nickname: [
+    { max: 50, message: '昵称长度不能超过 50', trigger: 'blur' },
+  ],
+}
+
+const loginFormRef = ref()
+const registerFormRef = ref()
+const currentFormRef = computed(() => (activeTab.value === 'login' ? loginFormRef : registerFormRef))
+
+const highlights = [
+  { title: '成就激励', desc: '自动同步学习成果，形成可视化成长路径', icon: Trophy },
+  { title: '数据洞察', desc: '趋势分析与热力图帮助你看清学习节奏', icon: DataAnalysis },
+  { title: 'AI 陪练', desc: '智能问答与学习建议提高复盘效率', icon: MagicStick },
+]
 
 async function handleLogin() {
-  await formRef.value?.validate()
+  await loginFormRef.value?.validate()
   loading.value = true
   try {
-    const res = await loginApi(form)
+    const res = await loginApi(loginForm)
     userStore.setLogin({
       token: res.data.token,
       userInfo: res.data.userInfo,
@@ -49,28 +94,141 @@ async function handleLogin() {
     loading.value = false
   }
 }
+
+async function handleRegister() {
+  await registerFormRef.value?.validate()
+  loading.value = true
+  try {
+    const res = await registerApi(registerForm)
+    userStore.setLogin({
+      token: res.data.token,
+      userInfo: res.data.userInfo,
+    })
+    ElMessage.success('注册成功，已为你自动登录')
+    router.push('/dashboard')
+  } catch {
+    // 错误已在拦截器提示
+  } finally {
+    loading.value = false
+  }
+}
+
+function handleSubmit() {
+  return activeTab.value === 'login' ? handleLogin() : handleRegister()
+}
 </script>
 
 <template>
   <div class="login-page tech-grid-bg">
     <ParticleBackground v-if="themeStore.showParticles" color="59, 130, 246" :count="80" />
     <div class="login-page__glow" />
-    <el-card class="login-card gradient-border-card" shadow="never" role="main">
-      <h2 class="gradient-text login-card__title">AI 学习成长助手</h2>
-      <p class="login-card__subtitle">科技风学习平台 · 课程演示项目</p>
-      <el-form ref="formRef" :model="form" :rules="rules" label-position="top" @submit.prevent="handleLogin">
-        <el-form-item label="账号" prop="username">
-          <el-input v-model="form.username" placeholder="admin" size="large" />
-        </el-form-item>
-        <el-form-item label="密码" prop="password">
-          <el-input v-model="form.password" type="password" placeholder="123456" size="large" show-password />
-        </el-form-item>
-        <el-button type="primary" size="large" class="login-card__btn" :loading="loading" native-type="submit">
-          登 录
-        </el-button>
-      </el-form>
-      <p class="login-card__hint">演示账号：admin / 123456</p>
-    </el-card>
+    <div class="login-shell">
+      <section class="login-showcase glass-card" aria-label="产品介绍">
+        <div class="login-showcase__badge">AI Learning Growth Studio</div>
+        <h1 class="gradient-text login-showcase__title">更有沉浸感的学习空间，更清晰可见的成长轨迹</h1>
+        <p class="login-showcase__desc">
+          聚合学习计划、课程、笔记、错题、资源与 AI 助手，把碎片努力沉淀成连续进步。
+        </p>
+        <img class="login-showcase__hero" :src="heroImage" alt="AI 学习成长助手视觉插图" />
+        <div class="login-showcase__highlights">
+          <div v-for="item in highlights" :key="item.title" class="login-showcase__item">
+            <div class="login-showcase__icon">
+              <el-icon><component :is="item.icon" /></el-icon>
+            </div>
+            <div>
+              <div class="login-showcase__item-title">{{ item.title }}</div>
+              <div class="login-showcase__item-desc">{{ item.desc }}</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <el-card class="login-card gradient-border-card" shadow="never" role="main">
+        <div class="login-card__brand">
+          <span class="login-card__brand-mark">AI</span>
+          <div>
+            <h2 class="gradient-text login-card__title">
+              {{ activeTab === 'login' ? '欢迎登录' : '创建账号' }}
+            </h2>
+            <p class="login-card__subtitle">
+              {{ activeTab === 'login' ? '进入你的智能学习控制台' : '开启你的智能学习之旅' }}
+            </p>
+          </div>
+        </div>
+        <div class="login-card__tabs">
+          <button
+            type="button"
+            class="login-card__tab"
+            :class="{ 'is-active': activeTab === 'login' }"
+            @click="activeTab = 'login'"
+          >
+            登录
+          </button>
+          <button
+            type="button"
+            class="login-card__tab"
+            :class="{ 'is-active': activeTab === 'register' }"
+            @click="activeTab = 'register'"
+          >
+            注册
+          </button>
+        </div>
+
+        <el-form
+          v-if="activeTab === 'login'"
+          ref="loginFormRef"
+          :model="loginForm"
+          :rules="loginRules"
+          label-position="top"
+          @submit.prevent="handleLogin"
+        >
+          <el-form-item label="账号" prop="username">
+            <el-input v-model="loginForm.username" placeholder="admin" size="large" />
+          </el-form-item>
+          <el-form-item label="密码" prop="password">
+            <el-input v-model="loginForm.password" type="password" placeholder="123456" size="large" show-password />
+          </el-form-item>
+          <el-button type="primary" size="large" class="login-card__btn" :loading="loading" native-type="submit">
+            登 录
+          </el-button>
+        </el-form>
+
+        <el-form
+          v-else
+          ref="registerFormRef"
+          :model="registerForm"
+          :rules="registerRules"
+          label-position="top"
+          @submit.prevent="handleRegister"
+        >
+          <el-form-item label="账号" prop="username">
+            <el-input v-model="registerForm.username" placeholder="3-20 位，支持中英文与数字" size="large" />
+          </el-form-item>
+          <el-form-item label="昵称" prop="nickname">
+            <el-input v-model="registerForm.nickname" placeholder="选填，默认使用账号" size="large" />
+          </el-form-item>
+          <el-form-item label="密码" prop="password">
+            <el-input v-model="registerForm.password" type="password" placeholder="6-32 位" size="large" show-password />
+          </el-form-item>
+          <el-form-item label="确认密码" prop="confirmPassword">
+            <el-input v-model="registerForm.confirmPassword" type="password" placeholder="请再次输入密码" size="large" show-password />
+          </el-form-item>
+          <el-button type="primary" size="large" class="login-card__btn" :loading="loading" native-type="submit">
+            注 册
+          </el-button>
+        </el-form>
+
+        <div class="login-card__footer">
+          <p v-if="activeTab === 'login'" class="login-card__hint">
+            演示账号：admin / 123456
+          </p>
+          <p v-else class="login-card__hint">
+            注册即表示同意用户协议与隐私政策
+          </p>
+          <p class="login-card__meta">支持深浅主题、成就系统、数据看板与 AI 学习辅助</p>
+        </div>
+      </el-card>
+    </div>
   </div>
 </template>
 
@@ -97,35 +255,216 @@ async function handleLogin() {
   z-index: 0;
 }
 
-.login-card {
+.login-shell {
   position: relative;
   z-index: 2;
+  width: min(1120px, calc(100% - 48px));
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) 420px;
+  gap: 24px;
+  align-items: stretch;
+}
+
+.login-showcase {
+  padding: 34px;
+  border-radius: 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background:
+    radial-gradient(circle at top left, rgba(99, 102, 241, 0.22), transparent 28%),
+    radial-gradient(circle at bottom right, rgba(14, 165, 233, 0.18), transparent 30%);
+}
+
+.login-showcase__badge {
+  display: inline-flex;
+  width: fit-content;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(99, 102, 241, 0.14);
+  color: #c7d2fe;
+  margin-bottom: 18px;
+}
+
+.login-showcase__title {
+  font-size: 38px;
+  line-height: 1.2;
+}
+
+.login-showcase__desc {
+  margin-top: 14px;
+  max-width: 620px;
+  color: var(--color-text-secondary);
+  line-height: 1.8;
+}
+
+.login-showcase__hero {
+  width: 320px;
+  max-width: 100%;
+  margin: 18px auto 12px 0;
+  filter: drop-shadow(0 20px 48px rgba(99, 102, 241, 0.25));
+}
+
+.login-showcase__highlights {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.login-showcase__item {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 18px;
+  background: rgba(15, 23, 42, 0.42);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.login-showcase__icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.login-showcase__item-title {
+  color: var(--color-text-primary);
+  font-weight: 600;
+}
+
+.login-showcase__item-desc {
+  margin-top: 6px;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  font-size: 13px;
+}
+
+.login-card {
+  position: relative;
   width: 420px;
-  padding: 12px 8px 8px;
+  max-width: 100%;
+  padding: 18px 10px 10px;
+  border-radius: 28px;
+}
+
+.login-card__brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.login-card__brand-mark {
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6, #06b6d4);
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: 0.08em;
 }
 
 .login-card__title {
-  font-size: 26px;
-  text-align: center;
-  margin-bottom: 8px;
+  font-size: 28px;
+  margin-bottom: 6px;
 }
 
 .login-card__subtitle {
-  text-align: center;
   color: var(--color-text-secondary);
   font-size: 14px;
-  margin-bottom: 28px;
 }
 
 .login-card__btn {
   width: 100%;
-  margin-top: 8px;
+  margin-top: 12px;
+  height: 44px;
+  border-radius: 14px;
+}
+
+.login-card__tabs {
+  display: flex;
+  gap: 8px;
+  padding: 6px;
+  margin-bottom: 18px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+}
+
+.login-card__tab {
+  flex: 1;
+  height: 36px;
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.login-card__tab:hover {
+  color: var(--color-text-primary);
+}
+
+.login-card__tab.is-active {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
+}
+
+.login-card__footer {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .login-card__hint {
-  margin-top: 16px;
-  text-align: center;
   font-size: 12px;
   color: var(--color-text-muted);
+}
+
+.login-card__meta {
+  margin-top: 6px;
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--color-text-secondary);
+}
+
+@media (max-width: 980px) {
+  .login-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .login-showcase__highlights {
+    grid-template-columns: 1fr;
+  }
+
+  .login-card {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .login-page {
+    padding: 24px 0;
+  }
+
+  .login-showcase {
+    padding: 24px;
+  }
+
+  .login-showcase__title {
+    font-size: 30px;
+  }
 }
 </style>

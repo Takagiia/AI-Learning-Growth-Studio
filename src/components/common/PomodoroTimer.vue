@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, onUnmounted } from 'vue'
-import { AlarmClock, VideoPlay, VideoPause, RefreshRight, ArrowDown, ArrowUp } from '@element-plus/icons-vue'
+import { ElMessage } from 'element-plus'
+import { AlarmClock, VideoPlay, VideoPause, Refresh, ArrowDown, ArrowUp } from '@element-plus/icons-vue'
 
 const TOTAL_WORK_TIME = 25 * 60 // 25 minutes
 const TOTAL_REST_TIME = 5 * 60 // 5 minutes
@@ -114,7 +115,7 @@ if (window.Notification && Notification.permission === 'default') {
       </el-button>
       
       <el-button circle size="large" @click="resetTimer">
-        <el-icon :size="20"><RefreshRight /></el-icon>
+        <el-icon :size="20"><Refresh /></el-icon>
       </el-button>
     </div>
   </div>

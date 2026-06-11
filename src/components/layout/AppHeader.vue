@@ -24,9 +24,10 @@ function goProfile() {
   <header class="app-header glass-card glass-card--glow">
     <div class="app-header__left">
       <el-button :icon="collapseIcon" circle text :aria-label="themeStore.sidebarCollapsed ? '展开侧栏' : '折叠侧栏'" @click="themeStore.toggleSidebar" />
+      <div class="app-header__brand-mark">AI</div>
       <div>
         <h1 class="app-header__title gradient-text">{{ pageTitle }}</h1>
-        <p class="app-header__breadcrumb">AI Learning Assistant / {{ pageTitle }}</p>
+        <p class="app-header__breadcrumb">AI Learning Growth Studio / {{ pageTitle }}</p>
       </div>
     </div>
     <div class="app-header__actions">
@@ -59,6 +60,20 @@ function goProfile() {
   display: flex;
   align-items: center;
   gap: 12px;
+}
+
+.app-header__brand-mark {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6, #06b6d4);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
 }
 
 .app-header__title {

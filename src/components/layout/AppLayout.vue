@@ -4,7 +4,6 @@ import { useThemeStore } from '@/stores/theme'
 import ParticleBackground from '@/components/common/ParticleBackground.vue'
 import AppHeader from './AppHeader.vue'
 import AppSidebar from './AppSidebar.vue'
-import PomodoroTimer from '@/components/common/PomodoroTimer.vue'
 
 const themeStore = useThemeStore()
 
@@ -41,13 +40,6 @@ const layoutClass = computed(() => ({
           </router-view>
         </main>
       </div>
-    </div>
-    
-    <!-- 全局番茄钟悬浮工具 -->
-    <div class="app-layout__floating-tool">
-      <transition name="el-zoom-in-bottom">
-        <PomodoroTimer />
-      </transition>
     </div>
   </div>
 </template>
