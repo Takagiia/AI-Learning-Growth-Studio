@@ -65,7 +65,7 @@ public class StudyPlanService {
     public Map<String, Object> update(Long userId, Long id, StudyPlanRequest request) {
         StudyPlan plan = studyPlanRepository.findById(id)
                 .filter(p -> p.getUserId().equals(userId))
-                .orElseThrow(() -> new ApiException(404, "计划不存�?));
+                .orElseThrow(() -> new ApiException(404, "计划不存在"));
 
         if (request.getTitle() != null) plan.setTitle(request.getTitle());
         if (request.getContent() != null) plan.setContent(request.getContent());
@@ -81,7 +81,7 @@ public class StudyPlanService {
     public void delete(Long userId, Long id) {
         StudyPlan plan = studyPlanRepository.findById(id)
                 .filter(p -> p.getUserId().equals(userId))
-                .orElseThrow(() -> new ApiException(404, "计划不存�?));
+                .orElseThrow(() -> new ApiException(404, "计划不存在"));
         studyPlanRepository.delete(plan);
     }
 
@@ -90,7 +90,7 @@ public class StudyPlanService {
         return studyPlanRepository.findByUserIdOrderByIdDesc(userId);
     }
 
-    /** 分析页：任务完成分布 + 任务总数 + 完成�?*/
+    /** 分析页：任务完成分布 + 任务总数 + 完成率 */
     @Transactional(readOnly = true)
     public Map<String, Object> stats(Long userId) {
         var plans = studyPlanRepository.findByUserIdOrderByIdDesc(userId);
@@ -100,9 +100,9 @@ public class StudyPlanService {
         int total = plans.size();
 
         List<Map<String, Object>> taskDistribution = List.of(
-                Map.of("name", "已完�?, "value", done),
-                Map.of("name", "进行�?, "value", doing),
-                Map.of("name", "待开�?, "value", pending),
+                Map.of("name", "已完成", "value", done),
+                Map.of("name", "进行中", "value", doing),
+                Map.of("name", "待开始", "value", pending),
                 Map.of("name", "已逾期", "value", 0)
         );
 

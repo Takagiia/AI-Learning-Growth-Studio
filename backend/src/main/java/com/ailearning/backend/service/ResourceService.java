@@ -75,7 +75,7 @@ public class ResourceService {
     public Resource detail(Long userId, Long id) {
         return resourceRepository.findById(id)
                 .filter(res -> res.getUserId().equals(userId))
-                .orElseThrow(() -> new ApiException(404, "资源不存�?));
+                .orElseThrow(() -> new ApiException(404, "Resource not found"));
     }
 
     @Transactional
@@ -147,23 +147,21 @@ public class ResourceService {
             return savedRes;
 
         } catch (IOException e) {
-            throw new ApiException(500, "文件上传失败: " + e.getMessage());
+            throw new ApiException(500, "File upload failed: " + e.getMessage());
         }
     }
 
     private String getFileType(String filename) {
         if (filename == null) return "unknown";
         String ext = filename.substring(filename.lastIndexOf(".") + 1).toLowerCase();
-        return switch (ext) {
-            case "pdf" -> "pdf";
-            case "doc", "docx" -> "docx";
-            case "md" -> "md";
-            case "xls", "xlsx" -> "xlsx";
-            case "mp4", "avi", "mov" -> "mp4";
-            case "zip", "rar", "7z" -> "zip";
-            case "png", "jpg", "jpeg", "gif" -> "png";
-            default -> "zip";
-        };
+        if ("pdf".equals(ext)) return "pdf";
+        if ("doc".equals(ext) || "docx".equals(ext)) return "docx";
+        if ("md".equals(ext)) return "md";
+        if ("xls".equals(ext) || "xlsx".equals(ext)) return "xlsx";
+        if ("mp4".equals(ext) || "avi".equals(ext) || "mov".equals(ext)) return "mp4";
+        if ("zip".equals(ext) || "rar".equals(ext) || "7z".equals(ext)) return "zip";
+        if ("png".equals(ext) || "jpg".equals(ext) || "jpeg".equals(ext) || "gif".equals(ext)) return "png";
+        return "zip";
     }
 
     private String formatFileSize(long size) {
@@ -175,14 +173,13 @@ public class ResourceService {
 
     public List<Map<String, String>> categories() {
         return List.of(
-                Map.of("id", "all", "name", "全部"),
-                Map.of("id", "book", "name", "电子�?),
-                Map.of("id", "code", "name", "代码示例"),
-                Map.of("id", "paper", "name", "试卷真题")
+                Map.of("id", "all", "name", "All"),
+                Map.of("id", "book", "name", "E-book"),
+                Map.of("id", "code", "name", "Code Example"),
+                Map.of("id", "paper", "name", "Exam Paper")
         );
     }
 
-    /** 分析页：资源总数 / 分类分布 / 总下载量 */
     @Transactional(readOnly = true)
     public Map<String, Object> stats(Long userId) {
         var resources = resourceRepository.findByUserIdOrderByCreatedAtDesc(userId);
@@ -193,7 +190,7 @@ public class ResourceService {
         List<Map<String, Object>> categoryDistribution = byCategory.entrySet().stream()
                 .map(e -> {
                     Map<String, Object> item = new HashMap<>();
-                    item.put("name", e.getKey() == null || e.getKey().isEmpty() ? "未分�? : e.getKey());
+                    item.put("name", e.getKey() == null || e.getKey().isEmpty() ? "Uncategorized" : e.getKey());
                     item.put("value", e.getValue());
                     return item;
                 })

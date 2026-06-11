@@ -44,7 +44,7 @@ public class AiService {
             Map<String, Object> requestBody = Map.of(
                     "model", model,
                     "messages", List.of(
-                            Map.of("role", "system", "content", systemPrompt + "\n\n如果用户问题有相关参考资料，请优先基于参考资料回答�?),
+                            Map.of("role", "system", "content", systemPrompt + "\n\nIf user question has related reference materials, please answer based on them first."),
                             Map.of("role", "user", "content", enhancedPrompt)
                     ),
                     "thinking", Map.of("type", "enabled"),
@@ -69,10 +69,10 @@ public class AiService {
                     Map<?, ?> message = (Map<?, ?>) choice.get("message");
                     content = (String) message.get("content");
                 } else {
-                    content = "抱歉，我暂时无法回答你的问题，请稍后重试�?;
+                    content = "Sorry, I can't answer your question now, please try again later.";
                 }
             } else {
-                content = "抱歉，我暂时无法回答你的问题，请稍后重试�?;
+                content = "Sorry, I can't answer your question now, please try again later.";
             }
 
             Map<String, Object> data = new LinkedHashMap<>();
@@ -87,7 +87,7 @@ public class AiService {
             Map<String, Object> data = new LinkedHashMap<>();
             data.put("id", "msg_" + System.currentTimeMillis());
             data.put("role", "assistant");
-            data.put("content", "抱歉，调用AI服务失败，请检查API密钥配置或稍后重试�?);
+            data.put("content", "Sorry, failed to call AI service, please check API key configuration or try again later.");
             data.put("createdAt", LocalDateTime.now());
             return data;
         } catch (Exception e) {
@@ -95,7 +95,7 @@ public class AiService {
             Map<String, Object> data = new LinkedHashMap<>();
             data.put("id", "msg_" + System.currentTimeMillis());
             data.put("role", "assistant");
-            data.put("content", "抱歉，系统出现错误，请稍后重试�?);
+            data.put("content", "Sorry, system error, please try again later.");
             data.put("createdAt", LocalDateTime.now());
             return data;
         }
@@ -103,11 +103,11 @@ public class AiService {
 
     public List<String> quickQuestions() {
         return List.of(
-                "如何准备考研�?,
-                "怎样提高英语学习效率�?,
-                "Vue3 项目学习路线是什么？",
-                "如何做时间管理？",
-                "算法刷题有什么建议？"
+                "How to prepare for postgraduate entrance exam?",
+                "How to improve English learning efficiency?",
+                "What is the learning roadmap for Vue3 projects?",
+                "How to do time management?",
+                "Any suggestions for algorithm practice?"
         );
     }
 }
